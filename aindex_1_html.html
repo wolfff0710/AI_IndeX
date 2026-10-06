@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AIndex — The AI Tools Directory</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{--bg:#050506;--fg:#eef2f3;--mut:#8a9499;--card:#0c0d0e;--line:#1c2124;--acc:#22d3ee;--accfg:#04141a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#050506;--fg:#eef2f3;--mut:#8a9499;--card:#0c0d0e;--line:#1c2124;--acc:#22d3ee;--accfg:#04141a}}
+:root[data-theme="dark"]{--bg:#050506;--fg:#eef2f3;--mut:#8a9499;--card:#0c0d0e;--line:#1c2124;--acc:#22d3ee;--accfg:#04141a}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse 70% 45% at 15% -5%,rgba(34,211,238,.28),transparent 65%),radial-gradient(ellipse 50% 40% at 100% 35%,rgba(34,211,238,.12),transparent 70%),linear-gradient(rgba(34,211,238,.05) 1px,transparent 1px) 0 0/44px 44px,linear-gradient(90deg,rgba(34,211,238,.05) 1px,transparent 1px) 0 0/44px 44px,var(--bg);background-attachment:fixed;color:var(--fg);font-family:'Bricolage Grotesque',system-ui,sans-serif;line-height:1.5}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+nav{display:flex;justify-content:space-between;align-items:center;padding:18px 0;border-bottom:1px solid var(--line)}
+.logo{font-weight:800;font-size:20px;letter-spacing:-.5px}.logo b{color:var(--acc)}
+nav a{color:var(--mut);text-decoration:none;font-size:14px;margin-left:18px}
+nav a:hover{color:var(--fg)}
+.hero{display:grid;grid-template-columns:1.6fr 1fr;gap:40px;padding:64px 0 40px;align-items:end}
+h1{font-size:clamp(38px,6vw,68px);line-height:1;letter-spacing:-2px;margin:0 0 18px;font-weight:800}
+h1 em{font-style:normal;color:var(--acc);text-shadow:0 0 32px rgba(34,211,238,.55)}
+.hero p{color:var(--mut);max-width:520px;margin:0;font-size:17px}
+.stats{border-left:2px solid var(--acc);padding-left:18px;font-size:13px;color:var(--mut)}
+.stats div{margin:6px 0}.stats b{color:var(--fg);font-size:26px;display:block;line-height:1.1}
+.tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:20px 0;border-top:1px solid var(--line)}
+input[type=search],input[type=email]{flex:1;min-width:200px;padding:12px 14px;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:2px;font:inherit;font-size:15px}
+input:focus{outline:2px solid var(--acc);outline-offset:1px}
+.chip{border:1px solid var(--line);background:transparent;color:var(--fg);padding:8px 14px;border-radius:999px;cursor:pointer;font:inherit;font-size:13px}
+.chip.on{background:var(--acc);color:var(--accfg);border-color:var(--acc)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;padding-bottom:56px}
+.card{background:rgba(12,13,14,.82);backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:4px;padding:20px;display:flex;flex-direction:column;gap:10px;transition:transform .15s,border-color .15s}
+.card:hover{transform:translateY(-3px);border-color:var(--acc);box-shadow:0 0 0 1px var(--acc),0 10px 36px rgba(34,211,238,.2)}
+.top{display:flex;justify-content:space-between;align-items:center}
+.ico{width:42px;height:42px;border-radius:10px 3px 10px 3px;background:var(--acc);color:var(--accfg);font-size:18px;display:grid;place-items:center;font-weight:800}
+.tag{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.8px}
+.card h3{margin:0;font-size:19px}.card p{margin:0;color:var(--mut);font-size:14px;flex:1}
+.card a{color:var(--acc);font-size:14px;font-weight:700;text-decoration:none}
+.empty{grid-column:1/-1;color:var(--mut);padding:30px 0}
+.news{border-top:1px solid var(--line);padding:40px 0}
+.news h2,.sub h2{font-size:30px;letter-spacing:-1px;margin:0 0 20px}
+.row{display:flex;gap:18px;padding:14px 0;border-bottom:1px solid var(--line);align-items:baseline}
+.row span{color:var(--acc);font-size:12px;min-width:90px}
+.sub{background:var(--card);border-top:1px solid var(--line);padding:48px 0}
+.sub p{color:inherit;opacity:.7;margin:0 0 18px}
+.sub form,.sub .f{display:flex;gap:10px;flex-wrap:wrap}
+.btn{background:var(--acc);color:var(--accfg);border:0;padding:12px 22px;border-radius:2px;font:inherit;font-weight:700;cursor:pointer}
+footer{padding:24px 0;color:var(--mut);font-size:13px}
+@media(max-width:720px){.hero{grid-template-columns:1fr;padding-top:40px}nav a{margin-left:12px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav><div class="logo">AI<b>ndex</b></div><div><a href="#tools">Tools</a><a href="#news">Briefing</a><a href="#join">Newsletter</a></div></nav>
+<header class="hero">
+<div><h1>Find the right <em>AI tool</em> in seconds.</h1><p>A hand-picked directory of AI tools for writing, coding, design, research and study. No noise, just what works.</p></div>
+<div class="stats mono"><div><b id="n">0</b>tools listed</div><div><b id="c">0</b>categories</div></div>
+</header>
+<section id="tools">
+<div class="tools"><input type="search" id="q" placeholder="Search tools…" aria-label="Search"><div id="chips" style="display:flex;gap:8px;flex-wrap:wrap"></div></div>
+<div class="grid" id="g"></div>
+</section>
+<section class="news" id="news">
+<h2>The Briefing</h2>
+<div class="row"><span class="mono">SAMPLE</span><div>Replace these rows with your weekly AI headlines.</div></div>
+<div class="row"><span class="mono">SAMPLE</span><div>Later: connect to Supabase so you can add news from an admin page.</div></div>
+</section>
+</div>
+<section class="sub" id="join"><div class="wrap">
+<h2>Get the weekly AI brief</h2><p>One short email every week. Unsubscribe anytime.</p>
+<div class="f"><input type="email" id="em" placeholder="you@email.com" aria-label="Email"><button class="btn" id="go">Subscribe</button></div>
+<div id="msg" class="mono" style="margin-top:12px;font-size:13px"></div>
+</div></section>
+<div class="wrap"><footer>© 2026 AIndex. Listings are editorial picks; check each site for current pricing.</footer></div>
+<script>
+const T=[
+["ChatGPT","Write","General-purpose AI assistant for writing, analysis and brainstorming.","https://chatgpt.com","#10a37f"],
+["Claude","Write","AI assistant strong at long documents, careful reasoning and coding.","https://claude.ai","#d97757"],
+["Perplexity","Research","Answer engine that searches the web and cites its sources.","https://www.perplexity.ai","#1fb8cd"],
+["NotebookLM","Study","Upload notes and papers, then ask questions or generate summaries.","https://notebooklm.google","#4285f4"],
+["Cursor","Code","AI-first code editor that edits across your whole project.","https://cursor.com","#f2f2f2"],
+["Lovable","Code","Describe an app in plain English and get a working website.","https://lovable.dev","#ff5a8a"],
+["Midjourney","Design","High-quality AI image generation from text prompts.","https://www.midjourney.com","#e8e8e8"],
+["Runway","Design","AI video generation and editing for creators.","https://runwayml.com","#ffffff"],
+["ElevenLabs","Design","Realistic AI voices for narration, dubbing and audio.","https://elevenlabs.io","#e5e5e5"],
+["Gemini","Write","Google's AI assistant, built into Search, Docs and Android.","https://gemini.google.com","#4796e3"],
+["Microsoft Copilot","Write","AI assistant integrated with Windows and Microsoft 365.","https://copilot.microsoft.com","#2b88d8"],
+["Grammarly","Write","AI writing help for grammar, tone and clarity.","https://www.grammarly.com","#15c39a"],
+["DeepSeek","Write","Open-weight AI models and a free chat assistant.","https://www.deepseek.com","#4d6bfe"],
+["Elicit","Research","Finds and summarises academic papers for literature reviews.","https://elicit.com","#2f855a"],
+["Consensus","Research","Search engine that answers questions from scientific studies.","https://consensus.app","#1e8ec8"],
+["Khanmigo","Study","Khan Academy's AI tutor for students and teachers.","https://www.khanmigo.ai","#14bf96"],
+["Photomath","Study","Scan a maths problem and see step-by-step solutions.","https://photomath.com","#ff3d4e"],
+["GitHub Copilot","Code","AI pair programmer inside VS Code and other editors.","https://github.com/features/copilot","#6e40c9"],
+["Replit","Code","Build, run and deploy apps in the browser with an AI agent.","https://replit.com","#f26207"],
+["v0","Code","Generate React and Tailwind UI from a text prompt.","https://v0.app","#ffffff"],
+["Bolt","Code","Prompt-to-full-stack web apps that run in your browser.","https://bolt.new","#1389fd"],
+["Canva","Design","Design tool with AI image, text and video features.","https://www.canva.com","#00c4cc"],
+["Leonardo.ai","Design","AI image generation with fine-grained style control.","https://leonardo.ai","#e6a23c"],
+["Suno","Design","Generate full songs with vocals from a text prompt.","https://suno.com","#ffffff"],
+["Notion AI","Productivity","AI notes, search and summaries inside your Notion workspace.","https://www.notion.com/product/ai","#ffffff"],
+["Gamma","Productivity","Create slide decks, docs and pages from a prompt.","https://gamma.app","#7c6cf0"],
+["Otter.ai","Productivity","Records meetings and writes transcripts and summaries.","https://otter.ai","#1d6bff"]
+];
+const C=["All",...new Set(T.map(t=>t[1]))];let cat="All";
+const g=document.getElementById("g"),q=document.getElementById("q"),ch=document.getElementById("chips");
+document.getElementById("n").textContent=T.length;document.getElementById("c").textContent=C.length-1;
+const fg=h=>{const n=parseInt(h.slice(1),16);return(.299*(n>>16)+.587*(n>>8&255)+.114*(n&255))>150?"#0a0a0a":"#fff"};const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function draw(){const s=q.value.toLowerCase();
+const r=T.filter(t=>(cat=="All"||t[1]==cat)&&(t[0]+t[2]).toLowerCase().includes(s));
+g.innerHTML=r.length?r.map(t=>`<div class="card"><div class="top"><div class="ico" style="background:${t[4]};color:${fg(t[4])}">${esc(t[0][0])}</div><span class="tag mono">${esc(t[1])}</span></div><h3>${esc(t[0])}</h3><p>${esc(t[2])}</p><a href="${t[3]}" target="_blank" rel="noopener">Visit →</a></div>`).join(""):'<div class="empty">No tools found.</div>'}
+ch.innerHTML=C.map(c=>`<button class="chip${c=="All"?" on":""}">${c}</button>`).join("");
+ch.onclick=e=>{if(e.target.tagName!="BUTTON")return;cat=e.target.textContent;[...ch.children].forEach(b=>b.classList.toggle("on",b==e.target));draw()};
+q.oninput=draw;draw();
+document.getElementById("go").onclick=()=>{const v=document.getElementById("em").value.trim(),m=document.getElementById("msg");
+m.textContent=/^\S+@\S+\.\S+$/.test(v)?"Thanks! (Demo only: connect Supabase to save emails.)":"Enter a valid email."};
+</script>
+</body>
+</html>
