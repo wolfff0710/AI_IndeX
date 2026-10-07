@@ -33,7 +33,8 @@ input:focus{outline:2px solid var(--acc);outline-offset:1px}
 .card{background:rgba(12,13,14,.82);backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:4px;padding:20px;display:flex;flex-direction:column;gap:10px;transition:transform .15s,border-color .15s}
 .card:hover{transform:translateY(-3px);border-color:var(--acc);box-shadow:0 0 0 1px var(--acc),0 10px 36px rgba(34,211,238,.2)}
 .top{display:flex;justify-content:space-between;align-items:center}
-.ico{width:42px;height:42px;border-radius:10px 3px 10px 3px;background:var(--acc);color:var(--accfg);font-size:18px;display:grid;place-items:center;font-weight:800}
+.ico{width:42px;height:42px;border-radius:10px 3px 10px 3px;background:var(--line);display:grid;place-items:center;overflow:hidden}
+.ico img{width:26px;height:26px;object-fit:contain}
 .tag{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.8px}
 .card h3{margin:0;font-size:19px}.card p{margin:0;color:var(--mut);font-size:14px;flex:1}
 .card a{color:var(--acc);font-size:14px;font-weight:700;text-decoration:none}
@@ -73,48 +74,87 @@ footer{padding:24px 0;color:var(--mut);font-size:13px}
 <div id="msg" class="mono" style="margin-top:12px;font-size:13px"></div>
 </div></section>
 <div class="wrap"><footer>© 2026 AIndex. Listings are editorial picks; check each site for current pricing.</footer></div>
+
 <script>
-const T=[
-["ChatGPT","Write","General-purpose AI assistant for writing, analysis and brainstorming.","https://chatgpt.com","#10a37f"],
-["Claude","Write","AI assistant strong at long documents, careful reasoning and coding.","https://claude.ai","#d97757"],
-["Perplexity","Research","Answer engine that searches the web and cites its sources.","https://www.perplexity.ai","#1fb8cd"],
-["NotebookLM","Study","Upload notes and papers, then ask questions or generate summaries.","https://notebooklm.google","#4285f4"],
-["Cursor","Code","AI-first code editor that edits across your whole project.","https://cursor.com","#f2f2f2"],
-["Lovable","Code","Describe an app in plain English and get a working website.","https://lovable.dev","#ff5a8a"],
-["Midjourney","Design","High-quality AI image generation from text prompts.","https://www.midjourney.com","#e8e8e8"],
-["Runway","Design","AI video generation and editing for creators.","https://runwayml.com","#ffffff"],
-["ElevenLabs","Design","Realistic AI voices for narration, dubbing and audio.","https://elevenlabs.io","#e5e5e5"],
-["Gemini","Write","Google's AI assistant, built into Search, Docs and Android.","https://gemini.google.com","#4796e3"],
-["Microsoft Copilot","Write","AI assistant integrated with Windows and Microsoft 365.","https://copilot.microsoft.com","#2b88d8"],
-["Grammarly","Write","AI writing help for grammar, tone and clarity.","https://www.grammarly.com","#15c39a"],
-["DeepSeek","Write","Open-weight AI models and a free chat assistant.","https://www.deepseek.com","#4d6bfe"],
-["Elicit","Research","Finds and summarises academic papers for literature reviews.","https://elicit.com","#2f855a"],
-["Consensus","Research","Search engine that answers questions from scientific studies.","https://consensus.app","#1e8ec8"],
-["Khanmigo","Study","Khan Academy's AI tutor for students and teachers.","https://www.khanmigo.ai","#14bf96"],
-["Photomath","Study","Scan a maths problem and see step-by-step solutions.","https://photomath.com","#ff3d4e"],
-["GitHub Copilot","Code","AI pair programmer inside VS Code and other editors.","https://github.com/features/copilot","#6e40c9"],
-["Replit","Code","Build, run and deploy apps in the browser with an AI agent.","https://replit.com","#f26207"],
-["v0","Code","Generate React and Tailwind UI from a text prompt.","https://v0.app","#ffffff"],
-["Bolt","Code","Prompt-to-full-stack web apps that run in your browser.","https://bolt.new","#1389fd"],
-["Canva","Design","Design tool with AI image, text and video features.","https://www.canva.com","#00c4cc"],
-["Leonardo.ai","Design","AI image generation with fine-grained style control.","https://leonardo.ai","#e6a23c"],
-["Suno","Design","Generate full songs with vocals from a text prompt.","https://suno.com","#ffffff"],
-["Notion AI","Productivity","AI notes, search and summaries inside your Notion workspace.","https://www.notion.com/product/ai","#ffffff"],
-["Gamma","Productivity","Create slide decks, docs and pages from a prompt.","https://gamma.app","#7c6cf0"],
-["Otter.ai","Productivity","Records meetings and writes transcripts and summaries.","https://otter.ai","#1d6bff"]
+const T = [
+  ["ChatGPT","Write","General-purpose AI assistant for writing, analysis and brainstorming.","https://chatgpt.com","chatgpt.com"],
+  ["Claude","Write","AI assistant strong at long documents, careful reasoning and coding.","https://claude.ai","claude.ai"],
+  ["Perplexity","Research","Answer engine that searches the web and cites its sources.","https://www.perplexity.ai","perplexity.ai"],
+  ["NotebookLM","Study","Upload notes and papers, then ask questions or generate summaries.","https://notebooklm.google","notebooklm.google"],
+  ["Cursor","Code","AI-first code editor that edits across your whole project.","https://cursor.com","cursor.com"],
+  ["Lovable","Code","Describe an app in plain English and get a working website.","https://lovable.dev","lovable.dev"],
+  ["Midjourney","Design","High-quality AI image generation from text prompts.","https://www.midjourney.com","midjourney.com"],
+  ["Runway","Design","AI video generation and editing for creators.","https://runwayml.com","runwayml.com"],
+  ["ElevenLabs","Design","Realistic AI voices for narration, dubbing and audio.","https://elevenlabs.io","elevenlabs.io"],
+  ["Gemini","Write","Google's AI assistant, built into Search, Docs and Android.","https://gemini.google.com","gemini.google.com"],
+  ["Microsoft Copilot","Write","AI assistant integrated with Windows and Microsoft 365.","https://copilot.microsoft.com","copilot.microsoft.com"],
+  ["Grammarly","Write","AI writing help for grammar, tone and clarity.","https://www.grammarly.com","grammarly.com"],
+  ["DeepSeek","Write","Open-weight AI models and a free chat assistant.","https://www.deepseek.com","deepseek.com"],
+  ["Elicit","Research","Finds and summarises academic papers for literature reviews.","https://elicit.com","elicit.com"],
+  ["Consensus","Research","Search engine that answers questions from scientific studies.","https://consensus.app","consensus.app"],
+  ["Khanmigo","Study","Khan Academy's AI tutor for students and teachers.","https://www.khanmigo.ai","khanmigo.ai"],
+  ["Photomath","Study","Scan a maths problem and see step-by-step solutions.","https://photomath.com","photomath.com"],
+  ["GitHub Copilot","Code","AI pair programmer inside VS Code and other editors.","https://github.com/features/copilot","github.com"],
+  ["Replit","Code","Build, run and deploy apps in the browser with an AI agent.","https://replit.com","replit.com"],
+  ["v0","Code","Generate React and Tailwind UI from a text prompt.","https://v0.app","v0.app"],
+  ["Bolt","Code","Prompt-to-full-stack web apps that run in your browser.","https://bolt.new","bolt.new"],
+  ["Canva","Design","Design tool with AI image, text and video features.","https://www.canva.com","canva.com"],
+  ["Leonardo.ai","Design","AI image generation with fine-grained style control.","https://leonardo.ai","leonardo.ai"],
+  ["Suno","Design","Generate full songs with vocals from a text prompt.","https://suno.com","suno.com"],
+  ["Notion AI","Productivity","AI notes, search and summaries inside your Notion workspace.","https://www.notion.com/product/ai","notion.so"],
+  ["Gamma","Productivity","Create slide decks, docs and pages from a prompt.","https://gamma.app","gamma.app"],
+  ["Otter.ai","Productivity","Records meetings and writes transcripts and summaries.","https://otter.ai","otter.ai"]
 ];
-const C=["All",...new Set(T.map(t=>t[1]))];let cat="All";
-const g=document.getElementById("g"),q=document.getElementById("q"),ch=document.getElementById("chips");
-document.getElementById("n").textContent=T.length;document.getElementById("c").textContent=C.length-1;
-const fg=h=>{const n=parseInt(h.slice(1),16);return(.299*(n>>16)+.587*(n>>8&255)+.114*(n&255))>150?"#0a0a0a":"#fff"};const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-function draw(){const s=q.value.toLowerCase();
-const r=T.filter(t=>(cat=="All"||t[1]==cat)&&(t[0]+t[2]).toLowerCase().includes(s));
-g.innerHTML=r.length?r.map(t=>`<div class="card"><div class="top"><div class="ico" style="background:${t[4]};color:${fg(t[4])}">${esc(t[0][0])}</div><span class="tag mono">${esc(t[1])}</span></div><h3>${esc(t[0])}</h3><p>${esc(t[2])}</p><a href="${t[3]}" target="_blank" rel="noopener">Visit →</a></div>`).join(""):'<div class="empty">No tools found.</div>'}
-ch.innerHTML=C.map(c=>`<button class="chip${c=="All"?" on":""}">${c}</button>`).join("");
-ch.onclick=e=>{if(e.target.tagName!="BUTTON")return;cat=e.target.textContent;[...ch.children].forEach(b=>b.classList.toggle("on",b==e.target));draw()};
-q.oninput=draw;draw();
-document.getElementById("go").onclick=()=>{const v=document.getElementById("em").value.trim(),m=document.getElementById("msg");
-m.textContent=/^\S+@\S+\.\S+$/.test(v)?"Thanks! (Demo only: connect Supabase to save emails.)":"Enter a valid email."};
+
+const C = ["All", ...new Set(T.map(t => t[1]))];
+let cat = "All";
+
+const g = document.getElementById("g"), q = document.getElementById("q"), ch = document.getElementById("chips");
+document.getElementById("n").textContent = T.length;
+document.getElementById("c").textContent = C.length - 1;
+
+const esc = s => s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function drawGrid() {
+  const s = q.value.toLowerCase();
+  const r = T.filter(t => (cat == "All" || t[1] == cat) && (t[0] + t[2]).toLowerCase().includes(s));
+  
+  g.innerHTML = r.length ? r.map(t => {
+    const iconUrl = `https://www.google.com/s2/favicons?domain=${t[4]}&sz=128`;
+    return `
+      <div class="card">
+        <div class="top">
+          <div class="ico">
+            <img src="${iconUrl}" alt="${esc(t[0])}" onerror="this.style.display='none';this.parentNode.textContent='${esc(t[0][0])}'">
+          </div>
+          <span class="tag mono">${esc(t[1])}</span>
+        </div>
+        <h3>${esc(t[0])}</h3>
+        <p>${esc(t[2])}</p>
+        <a href="${t[3]}" target="_blank" rel="noopener">Visit →</a>
+      </div>
+    `;
+  }).join("") : '<div class="empty">No tools found.</div>';
+}
+
+function initChips() {
+  ch.innerHTML = C.map(c => `<button class="chip${c == "All" ? " on" : ""}">${c}</button>`).join("");
+  ch.onclick = e => {
+    if (e.target.tagName != "BUTTON") return;
+    cat = e.target.textContent;
+    [...ch.children].forEach(b => b.classList.toggle("on", b == e.target));
+    drawGrid();
+  };
+}
+
+q.oninput = drawGrid;
+initChips();
+drawGrid();
+
+document.getElementById("go").onclick = () => {
+  const v = document.getElementById("em").value.trim(), m = document.getElementById("msg");
+  m.textContent = /^\S+@\S+\.\S+$/.test(v) ? "Thanks! (Demo only: connect Supabase to save emails.)" : "Enter a valid email.";
+};
 </script>
 </body>
 </html>
