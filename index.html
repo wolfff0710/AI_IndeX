@@ -7,66 +7,93 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 :root{--bg:#050506;--fg:#eef2f3;--mut:#8a9499;--card:#0c0d0e;--line:#1c2124;--acc:#22d3ee;--accfg:#04141a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#050506;--fg:#eef2f3;--mut:#8a9499;--card:#0c0d0e;--line:#1c2124;--acc:#22d3ee;--accfg:#04141a}}
-:root[data-theme="dark"]{--bg:#050506;--fg:#eef2f3;--mut:#8a9499;--card:#0c0d0e;--line:#1c2124;--acc:#22d3ee;--accfg:#04141a}
 html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
 *{box-sizing:border-box}
 body{margin:0;background:radial-gradient(ellipse 70% 45% at 15% -5%,rgba(34,211,238,.28),transparent 65%),radial-gradient(ellipse 50% 40% at 100% 35%,rgba(34,211,238,.12),transparent 70%),linear-gradient(rgba(34,211,238,.05) 1px,transparent 1px) 0 0/44px 44px,linear-gradient(90deg,rgba(34,211,238,.05) 1px,transparent 1px) 0 0/44px 44px,var(--bg);background-attachment:fixed;color:var(--fg);font-family:'Bricolage Grotesque',system-ui,sans-serif;line-height:1.5}
 .mono{font-family:'IBM Plex Mono',ui-monospace,monospace}
 .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
-nav{display:flex;justify-content:space-between;align-items:center;padding:18px 0;border-bottom:1px solid var(--line)}
-.logo{font-weight:800;font-size:20px;letter-spacing:-.5px}.logo b{color:var(--acc)}
-nav a{color:var(--mut);text-decoration:none;font-size:14px;margin-left:18px}
-nav a:hover{color:var(--fg)}
+nav{display:flex;justify-content:space-between;align-items:center;padding:18px 0;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:8px}
+.logo{font-weight:800;font-size:20px;letter-spacing:-.5px;color:var(--fg);text-decoration:none}.logo b{color:var(--acc)}
+nav a.l{color:var(--mut);text-decoration:none;font-size:14px;margin-left:16px;padding:6px 0;border-bottom:2px solid transparent}
+nav a.l:hover{color:var(--fg)}nav a.l.on{color:var(--acc);border-color:var(--acc)}
 .hero{display:grid;grid-template-columns:1.6fr 1fr;gap:40px;padding:64px 0 40px;align-items:end}
 h1{font-size:clamp(38px,6vw,68px);line-height:1;letter-spacing:-2px;margin:0 0 18px;font-weight:800}
 h1 em{font-style:normal;color:var(--acc);text-shadow:0 0 32px rgba(34,211,238,.55)}
-.hero p{color:var(--mut);max-width:520px;margin:0;font-size:17px}
+.hero p{color:var(--mut);max-width:520px;margin:0 0 18px;font-size:17px}
 .stats{border-left:2px solid var(--acc);padding-left:18px;font-size:13px;color:var(--mut)}
 .stats div{margin:6px 0}.stats b{color:var(--fg);font-size:26px;display:block;line-height:1.1}
 .tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:20px 0;border-top:1px solid var(--line)}
 input[type=search],input[type=email]{flex:1;min-width:200px;padding:12px 14px;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:2px;font:inherit;font-size:15px}
 input:focus{outline:2px solid var(--acc);outline-offset:1px}
-.chip{border:1px solid var(--line);background:transparent;color:var(--fg);padding:8px 14px;border-radius:999px;cursor:pointer;font:inherit;font-size:13px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:transparent;color:var(--fg);padding:7px 13px;border-radius:999px;cursor:pointer;font:inherit;font-size:13px}
 .chip.on{background:var(--acc);color:var(--accfg);border-color:var(--acc)}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;padding-bottom:56px}
 .card{background:rgba(12,13,14,.82);backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:4px;padding:20px;display:flex;flex-direction:column;gap:10px;transition:transform .15s,border-color .15s}
 .card:hover{transform:translateY(-3px);border-color:var(--acc);box-shadow:0 0 0 1px var(--acc),0 10px 36px rgba(34,211,238,.2)}
 .top{display:flex;justify-content:space-between;align-items:center}
-.ico{width:44px;height:44px;border-radius:12px;background:#f4f6f7;color:#0a0a0a;display:grid;place-items:center;font-weight:800;font-size:18px;overflow:hidden}.ico img{width:28px;height:28px;object-fit:contain}
+.ico{width:44px;height:44px;flex:none;border-radius:12px;background:#f4f6f7;color:#0a0a0a;display:grid;place-items:center;font-weight:800;font-size:18px;overflow:hidden}
+.ico img{width:28px;height:28px;object-fit:contain}
 .tag{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.8px}
 .card h3{margin:0;font-size:19px}.card p{margin:0;color:var(--mut);font-size:14px;flex:1}
-.card a{color:var(--acc);font-size:14px;font-weight:700;text-decoration:none}
+a.v{color:var(--acc);font-size:14px;font-weight:700;text-decoration:none}
 .empty{grid-column:1/-1;color:var(--mut);padding:30px 0}
-.news{border-top:1px solid var(--line);padding:40px 0}
-.news h2,.sub h2{font-size:30px;letter-spacing:-1px;margin:0 0 20px}
+.btn{background:var(--acc);color:var(--accfg);border:0;padding:12px 22px;border-radius:2px;font:inherit;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block}
+.pg{padding:48px 0 24px}.pg h2{font-size:clamp(32px,5vw,52px);letter-spacing:-1.5px;margin:0 0 8px;line-height:1.05}.pg>p{color:var(--mut);margin:0 0 22px;max-width:600px}
+.ctl{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px 28px;border:1px solid var(--line);background:rgba(12,13,14,.82);padding:18px;border-radius:4px;margin-bottom:18px}
+.ctl label{font-size:12px;color:var(--mut);display:flex;justify-content:space-between}.ctl label b{color:var(--acc)}
+.ctl input[type=range]{width:100%;accent-color:#22d3ee}
+.rks{padding:16px 0 56px}
+.rk{display:grid;grid-template-columns:40px 44px 1fr 150px 90px;gap:14px;align-items:center;padding:14px;border:1px solid var(--line);background:rgba(12,13,14,.82);border-radius:4px;margin-bottom:8px}
+.rk:hover{border-color:var(--acc)}
+.rk.t3{border-color:rgba(34,211,238,.5)}
+.rk .n{font-size:24px;font-weight:800;color:var(--mut)}.rk.t3 .n{color:var(--acc)}
+.rk h3{margin:0;font-size:17px}.mini{font-size:11px;color:var(--mut)}
+.sc b{font-size:20px}.sc div{height:5px;background:var(--line);border-radius:3px;margin-top:4px}.sc i{display:block;height:100%;background:var(--acc);border-radius:3px}
 .row{display:flex;gap:18px;padding:14px 0;border-bottom:1px solid var(--line);align-items:baseline}
 .row span{color:var(--acc);font-size:12px;min-width:90px}
 .sub{background:var(--card);border-top:1px solid var(--line);padding:48px 0}
-.sub p{color:inherit;opacity:.7;margin:0 0 18px}
-.sub form,.sub .f{display:flex;gap:10px;flex-wrap:wrap}
-.btn{background:var(--acc);color:var(--accfg);border:0;padding:12px 22px;border-radius:2px;font:inherit;font-weight:700;cursor:pointer}
+.sub h2{font-size:30px;letter-spacing:-1px;margin:0 0 20px}.sub p{opacity:.7;margin:0 0 18px}
+.f{display:flex;gap:10px;flex-wrap:wrap}
 footer{padding:24px 0;color:var(--mut);font-size:13px}
-@media(max-width:720px){.hero{grid-template-columns:1fr;padding-top:40px}nav a{margin-left:12px}}
+@media(max-width:720px){.hero{grid-template-columns:1fr;padding-top:40px}nav a.l{margin-left:0;margin-right:14px}.rk{grid-template-columns:30px 44px 1fr 70px}.rk .mini,.rk a.v{display:none}}
 </style>
 </head>
 <body>
 <div class="wrap">
-<nav><div class="logo">AI<b>ndex</b></div><div><a href="#tools">Tools</a><a href="#news">Briefing</a><a href="#join">Newsletter</a></div></nav>
+<nav><a class="logo" href="#/">AI<b>ndex</b></a><div><a class="l" data-r="home" href="#/">Tools</a><a class="l" data-r="rankings" href="#/rankings">Rankings</a><a class="l" data-r="briefing" href="#/briefing">Briefing</a><a class="l" href="#/join">Newsletter</a></div></nav>
+
+<div id="v-home">
 <header class="hero">
-<div><h1>Find the right <em>AI tool</em> in seconds.</h1><p>A hand-picked directory of AI tools for writing, coding, design, research and study. No noise, just what works.</p></div>
+<div><h1>Find the right <em>AI tool</em> in seconds.</h1><p>A hand-picked directory of AI tools for chat, writing, research, study, coding, design, video and audio.</p><a class="btn" href="#/rankings">See the rankings →</a></div>
 <div class="stats mono"><div><b id="n">0</b>tools listed</div><div><b id="c">0</b>categories</div></div>
 </header>
-<section id="tools">
-<div class="tools"><input type="search" id="q" placeholder="Search tools…" aria-label="Search"><div id="chips" style="display:flex;gap:8px;flex-wrap:wrap"></div></div>
+<div class="tools"><input type="search" id="q" placeholder="Search tools…" aria-label="Search"><div class="chips" id="chips"></div></div>
 <div class="grid" id="g"></div>
-</section>
-<section class="news" id="news">
-<h2>The Briefing</h2>
-<div class="row"><span class="mono">SAMPLE</span><div>Replace these rows with your weekly AI headlines.</div></div>
-<div class="row"><span class="mono">SAMPLE</span><div>Later: connect to Supabase so you can add news from an admin page.</div></div>
-</section>
 </div>
+
+<div id="v-rankings" hidden>
+<div class="pg"><h2>AI Tool <em style="font-style:normal;color:var(--acc)">Rankings</em></h2>
+<p>Every tool scored out of 10 on four criteria. Move the sliders to set what matters to you and the ranking updates live.</p>
+<div class="ctl">
+<div><label>Quality <b id="o-q">3</b></label><input type="range" id="w-q" min="0" max="5" value="3"></div>
+<div><label>Ease of use <b id="o-e">3</b></label><input type="range" id="w-e" min="0" max="5" value="3"></div>
+<div><label>Value for money <b id="o-v">3</b></label><input type="range" id="w-v" min="0" max="5" value="3"></div>
+<div><label>Features <b id="o-f">3</b></label><input type="range" id="w-f" min="0" max="5" value="3"></div>
+</div>
+<div class="chips" id="rchips"></div></div>
+<div class="rks" id="rk"></div>
+<p class="mini mono" style="padding-bottom:40px">Scores are editorial estimates, not benchmarks. Edit the numbers in the code to match your own testing.</p>
+</div>
+
+<div id="v-briefing" hidden>
+<div class="pg"><h2>The Briefing</h2><p>Weekly AI headlines and what they mean.</p></div>
+<div class="row"><span class="mono">SAMPLE</span><div>Replace these rows with your weekly AI headlines.</div></div>
+<div class="row"><span class="mono">SAMPLE</span><div>Later: connect Supabase so you can add news from an admin page.</div></div>
+<div style="height:48px"></div>
+</div>
+</div>
+
 <section class="sub" id="join"><div class="wrap">
 <h2>Get the weekly AI brief</h2><p>One short email every week. Unsubscribe anytime.</p>
 <div class="f"><input type="email" id="em" placeholder="you@email.com" aria-label="Email"><button class="btn" id="go">Subscribe</button></div>
@@ -74,47 +101,77 @@ footer{padding:24px 0;color:var(--mut);font-size:13px}
 </div></section>
 <div class="wrap"><footer>© 2026 AIndex. Listings are editorial picks; check each site for current pricing.</footer></div>
 <script>
+// name, category, description, url, quality, ease, value, features (each /10)
 const T=[
-["ChatGPT","Write","General-purpose AI assistant for writing, analysis and brainstorming.","https://chatgpt.com","#10a37f"],
-["Claude","Write","AI assistant strong at long documents, careful reasoning and coding.","https://claude.ai","#d97757"],
-["Perplexity","Research","Answer engine that searches the web and cites its sources.","https://www.perplexity.ai","#1fb8cd"],
-["NotebookLM","Study","Upload notes and papers, then ask questions or generate summaries.","https://notebooklm.google","#4285f4"],
-["Cursor","Code","AI-first code editor that edits across your whole project.","https://cursor.com","#f2f2f2"],
-["Lovable","Code","Describe an app in plain English and get a working website.","https://lovable.dev","#ff5a8a"],
-["Midjourney","Design","High-quality AI image generation from text prompts.","https://www.midjourney.com","#e8e8e8"],
-["Runway","Design","AI video generation and editing for creators.","https://runwayml.com","#ffffff"],
-["ElevenLabs","Design","Realistic AI voices for narration, dubbing and audio.","https://elevenlabs.io","#e5e5e5"],
-["Gemini","Write","Google's AI assistant, built into Search, Docs and Android.","https://gemini.google.com","#4796e3"],
-["Microsoft Copilot","Write","AI assistant integrated with Windows and Microsoft 365.","https://copilot.microsoft.com","#2b88d8"],
-["Grammarly","Write","AI writing help for grammar, tone and clarity.","https://www.grammarly.com","#15c39a"],
-["DeepSeek","Write","Open-weight AI models and a free chat assistant.","https://www.deepseek.com","#4d6bfe"],
-["Elicit","Research","Finds and summarises academic papers for literature reviews.","https://elicit.com","#2f855a"],
-["Consensus","Research","Search engine that answers questions from scientific studies.","https://consensus.app","#1e8ec8"],
-["Khanmigo","Study","Khan Academy's AI tutor for students and teachers.","https://www.khanmigo.ai","#14bf96"],
-["Photomath","Study","Scan a maths problem and see step-by-step solutions.","https://photomath.com","#ff3d4e"],
-["GitHub Copilot","Code","AI pair programmer inside VS Code and other editors.","https://github.com/features/copilot","#6e40c9"],
-["Replit","Code","Build, run and deploy apps in the browser with an AI agent.","https://replit.com","#f26207"],
-["v0","Code","Generate React and Tailwind UI from a text prompt.","https://v0.app","#ffffff"],
-["Bolt","Code","Prompt-to-full-stack web apps that run in your browser.","https://bolt.new","#1389fd"],
-["Canva","Design","Design tool with AI image, text and video features.","https://www.canva.com","#00c4cc"],
-["Leonardo.ai","Design","AI image generation with fine-grained style control.","https://leonardo.ai","#e6a23c"],
-["Suno","Design","Generate full songs with vocals from a text prompt.","https://suno.com","#ffffff"],
-["Notion AI","Productivity","AI notes, search and summaries inside your Notion workspace.","https://www.notion.com/product/ai","#ffffff"],
-["Gamma","Productivity","Create slide decks, docs and pages from a prompt.","https://gamma.app","#7c6cf0"],
-["Otter.ai","Productivity","Records meetings and writes transcripts and summaries.","https://otter.ai","#1d6bff"]
+["ChatGPT","Chatbots","General-purpose assistant for writing, analysis and brainstorming.","https://chatgpt.com",9,9,7,9],
+["Claude","Chatbots","Strong at long documents, careful reasoning and coding.","https://claude.ai",9,9,7,8],
+["Gemini","Chatbots","Google's assistant, built into Search, Docs and Android.","https://gemini.google.com",8,9,8,9],
+["Microsoft Copilot","Chatbots","Assistant integrated with Windows and Microsoft 365.","https://copilot.microsoft.com",7,9,8,8],
+["DeepSeek","Chatbots","Open-weight models and a free chat assistant.","https://www.deepseek.com",8,8,10,7],
+["Le Chat","Chatbots","Mistral's fast, European AI assistant.","https://chat.mistral.ai",7,8,9,7],
+["Grammarly","Writing","Grammar, tone and clarity suggestions as you write.","https://www.grammarly.com",8,9,7,7],
+["QuillBot","Writing","Paraphraser, summariser and grammar checker.","https://quillbot.com",7,9,8,6],
+["Jasper","Writing","Marketing copy and brand-voice content for teams.","https://www.jasper.ai",7,7,5,8],
+["Perplexity","Research","Answer engine that searches the web and cites sources.","https://www.perplexity.ai",9,9,8,8],
+["Elicit","Research","Finds and summarises academic papers.","https://elicit.com",8,7,7,7],
+["Consensus","Research","Answers questions using findings from scientific studies.","https://consensus.app",8,8,7,6],
+["Semantic Scholar","Research","Free AI-powered search engine for research papers.","https://www.semanticscholar.org",7,8,10,6],
+["NotebookLM","Study","Upload notes, then ask questions or generate summaries.","https://notebooklm.google",9,9,9,8],
+["Khanmigo","Study","Khan Academy's AI tutor for students and teachers.","https://www.khanmigo.ai",8,8,8,7],
+["Photomath","Study","Scan a maths problem and see step-by-step solutions.","https://photomath.com",8,10,9,6],
+["Wolfram Alpha","Study","Computational engine for maths, physics and chemistry.","https://www.wolframalpha.com",9,6,7,8],
+["Quizlet","Study","Flashcards and practice tests with AI study tools.","https://quizlet.com",7,9,7,7],
+["Duolingo","Study","Gamified language learning with AI practice.","https://www.duolingo.com",8,10,7,7],
+["Cursor","Coding","AI-first code editor that edits across your project.","https://cursor.com",9,8,7,9],
+["GitHub Copilot","Coding","AI pair programmer inside VS Code and other editors.","https://github.com/features/copilot",8,9,7,8],
+["Windsurf","Coding","Agentic AI code editor.","https://windsurf.com",8,8,8,8],
+["Lovable","App Builders","Describe an app in plain English, get a working website.","https://lovable.dev",8,9,7,7],
+["Replit","App Builders","Build, run and deploy apps in the browser with an AI agent.","https://replit.com",8,8,7,8],
+["v0","App Builders","Generate React and Tailwind UI from a prompt.","https://v0.app",8,9,7,7],
+["Bolt","App Builders","Prompt-to-full-stack web apps in your browser.","https://bolt.new",8,9,7,7],
+["Base44","App Builders","Build apps with built-in database and hosting from a prompt.","https://base44.com",7,9,7,7],
+["Midjourney","Image","High-quality artistic image generation.","https://www.midjourney.com",10,6,6,8],
+["Leonardo.ai","Image","Image generation with fine-grained style control.","https://leonardo.ai",8,8,8,8],
+["Ideogram","Image","Image generation known for accurate text in images.","https://ideogram.ai",8,9,8,6],
+["Adobe Firefly","Image","Image and design AI built for commercial use.","https://firefly.adobe.com",8,8,7,8],
+["Canva","Image","Design platform with AI image, text and video tools.","https://www.canva.com",7,10,9,9],
+["Runway","Video","AI video generation and editing for creators.","https://runwayml.com",9,7,6,9],
+["Pika","Video","Quick text-to-video and image-to-video clips.","https://pika.art",7,9,7,6],
+["Luma Dream Machine","Video","Realistic AI video from text or images.","https://lumalabs.ai",8,8,7,7],
+["HeyGen","Video","AI avatars and talking-head videos in many languages.","https://www.heygen.com",8,8,6,8],
+["Synthesia","Video","AI presenters for training and explainer videos.","https://www.synthesia.io",8,8,6,7],
+["ElevenLabs","Audio","Realistic AI voices for narration and dubbing.","https://elevenlabs.io",10,8,7,9],
+["Suno","Audio","Generate full songs with vocals from a prompt.","https://suno.com",9,10,8,7],
+["Descript","Audio","Edit audio and video by editing the transcript.","https://www.descript.com",8,7,7,9],
+["Notion AI","Productivity","AI notes, search and summaries in your workspace.","https://www.notion.com/product/ai",8,8,7,8],
+["Gamma","Productivity","Create slide decks, docs and pages from a prompt.","https://gamma.app",8,9,7,7],
+["Otter.ai","Productivity","Records meetings and writes transcripts and summaries.","https://otter.ai",7,9,7,7],
+["Zapier","Productivity","Connect apps and automate workflows with AI.","https://zapier.com",7,7,7,9]
 ];
-const C=["All",...new Set(T.map(t=>t[1]))];let cat="All";
-const g=document.getElementById("g"),q=document.getElementById("q"),ch=document.getElementById("chips");
-document.getElementById("n").textContent=T.length;document.getElementById("c").textContent=C.length-1;
-const fg=h=>{const n=parseInt(h.slice(1),16);return(.299*(n>>16)+.587*(n>>8&255)+.114*(n&255))>150?"#0a0a0a":"#fff"};const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-function draw(){const s=q.value.toLowerCase();
+const C=["All",...new Set(T.map(t=>t[1]))];
+const $=id=>document.getElementById(id);
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const ic=t=>`<div class="ico"><img src="icons/${t[0].toLowerCase().replace(/[^a-z0-9]/g,'')}.png" alt="" onerror="this.onerror=function(){this.parentNode.textContent='${esc(t[0][0])}'};this.src='https://www.google.com/s2/favicons?domain=${new URL(t[3]).hostname}&sz=128'"></div>`;
+let cat="All",rc="All";const W={q:3,e:3,v:3,f:3};
+function chips(el,get,set,cb){el.innerHTML=C.map(c=>`<button class="chip${c==get()?" on":""}">${c}</button>`).join("");el.onclick=e=>{if(e.target.tagName!="BUTTON")return;set(e.target.textContent);[...el.children].forEach(b=>b.classList.toggle("on",b==e.target));cb()}}
+function draw(){const s=$("q").value.toLowerCase();
 const r=T.filter(t=>(cat=="All"||t[1]==cat)&&(t[0]+t[2]).toLowerCase().includes(s));
-g.innerHTML=r.length?r.map(t=>`<div class="card"><div class="top"><div class="ico"><img src="https://www.google.com/s2/favicons?domain=${new URL(t[3]).hostname}&sz=128" alt="${esc(t[0])}" onerror="this.parentNode.textContent='${esc(t[0][0])}'"></div><span class="tag mono">${esc(t[1])}</span></div><h3>${esc(t[0])}</h3><p>${esc(t[2])}</p><a href="${t[3]}" target="_blank" rel="noopener">Visit →</a></div>`).join(""):'<div class="empty">No tools found.</div>'}
-ch.innerHTML=C.map(c=>`<button class="chip${c=="All"?" on":""}">${c}</button>`).join("");
-ch.onclick=e=>{if(e.target.tagName!="BUTTON")return;cat=e.target.textContent;[...ch.children].forEach(b=>b.classList.toggle("on",b==e.target));draw()};
-q.oninput=draw;draw();
-document.getElementById("go").onclick=()=>{const v=document.getElementById("em").value.trim(),m=document.getElementById("msg");
-m.textContent=/^\S+@\S+\.\S+$/.test(v)?"Thanks! (Demo only: connect Supabase to save emails.)":"Enter a valid email."};
+$("g").innerHTML=r.length?r.map(t=>`<div class="card"><div class="top">${ic(t)}<span class="tag mono">${esc(t[1])}</span></div><h3>${esc(t[0])}</h3><p>${esc(t[2])}</p><a class="v" href="${t[3]}" target="_blank" rel="noopener">Visit →</a></div>`).join(""):'<div class="empty">No tools found.</div>'}
+function rank(){const sum=W.q+W.e+W.v+W.f;
+const r=T.filter(t=>rc=="All"||t[1]==rc).map(t=>[t,sum?(t[4]*W.q+t[5]*W.e+t[6]*W.v+t[7]*W.f)/sum:0]).sort((a,b)=>b[1]-a[1]);
+$("rk").innerHTML=r.map(([t,s],i)=>`<div class="rk${i<3?" t3":""}"><b class="n">${i+1}</b>${ic(t)}<div><h3>${esc(t[0])}</h3><span class="tag mono">${esc(t[1])}</span></div><div class="mini mono">Quality ${t[4]} · Ease ${t[5]}<br>Value ${t[6]} · Features ${t[7]}</div><div class="sc"><b>${s.toFixed(1)}</b><div><i style="width:${s*10}%"></i></div></div><a class="v" href="${t[3]}" target="_blank" rel="noopener">Visit →</a></div>`).join("")}
+["q","e","v","f"].forEach(k=>$("w-"+k).oninput=e=>{W[k]=+e.target.value;$("o-"+k).textContent=W[k];rank()});
+$("n").textContent=T.length;$("c").textContent=C.length-1;
+chips($("chips"),()=>cat,v=>cat=v,draw);chips($("rchips"),()=>rc,v=>rc=v,rank);
+$("q").oninput=draw;draw();rank();
+function route(){const h=location.hash.slice(2)||"home";
+if(h=="join"){$("join").scrollIntoView();return}
+const v=["home","rankings","briefing"].includes(h)?h:"home";
+["home","rankings","briefing"].forEach(x=>$("v-"+x).hidden=x!=v);
+document.querySelectorAll("nav a[data-r]").forEach(a=>a.classList.toggle("on",a.dataset.r==v));
+window.scrollTo(0,0)}
+addEventListener("hashchange",route);route();
+$("go").onclick=()=>{const v=$("em").value.trim(),m=$("msg");m.textContent=/^\S+@\S+\.\S+$/.test(v)?"Thanks! (Demo only: connect Supabase to save emails.)":"Enter a valid email."};
 </script>
 </body>
 </html>
