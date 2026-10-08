@@ -56,7 +56,20 @@ a.v{color:var(--acc);font-size:14px;font-weight:700;text-decoration:none}
 .sub h2{font-size:30px;letter-spacing:-1px;margin:0 0 20px}.sub p{opacity:.7;margin:0 0 18px}
 .f{display:flex;gap:10px;flex-wrap:wrap}
 footer{padding:24px 0;color:var(--mut);font-size:13px}
-@media(max-width:720px){.hero{grid-template-columns:1fr;padding-top:40px}nav a.l{margin-left:0;margin-right:14px}.rk{grid-template-columns:30px 44px 1fr 70px}.rk .mini,.rk a.v{display:none}}
+.sel{padding:12px;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:2px;font:inherit;font-size:14px}
+.chip.sv{color:var(--acc);border-color:var(--acc)}.chip.sv.on{color:var(--accfg)}
+.star{background:none;border:0;color:var(--mut);font-size:15px;cursor:pointer;line-height:1;padding:2px}.star:hover{color:var(--acc)}.star.on{color:var(--acc);text-shadow:0 0 10px rgba(34,211,238,.6)}
+.card,.rk{cursor:pointer}
+.md{position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(4px);display:grid;place-items:center;padding:16px;z-index:50;overflow:auto}.md[hidden]{display:none}
+.mb{position:relative;background:var(--card);border:1px solid var(--acc);border-radius:6px;max-width:660px;width:100%;max-height:90vh;overflow:auto;padding:26px;box-shadow:0 0 60px rgba(34,211,238,.18)}
+.x{position:absolute;top:12px;right:14px;background:none;border:0;color:var(--mut);font-size:20px;cursor:pointer}.x:hover{color:var(--fg)}
+.mb h2{margin:0;font-size:26px}.mb h4{margin:20px 0 8px;font-size:12px;letter-spacing:.8px;text-transform:uppercase;color:var(--acc);font-family:'IBM Plex Mono',monospace}
+.mh{display:flex;gap:14px;align-items:center;padding-right:30px}.mh>div{flex:1}
+.pc{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.mb ul{margin:0;padding-left:18px;color:var(--mut);font-size:14px}.mb li{margin:3px 0}.mb p{color:var(--mut);margin:0;font-size:15px}
+.br{display:grid;grid-template-columns:90px 1fr 24px;gap:10px;align-items:center;font-size:13px;color:var(--mut);margin:4px 0}.br div{height:5px;background:var(--line);border-radius:3px}.br i{display:block;height:100%;background:var(--acc);border-radius:3px}
+.alt{display:flex;gap:8px;flex-wrap:wrap}
+@media(max-width:720px){.pc{grid-template-columns:1fr}.hero{grid-template-columns:1fr;padding-top:40px}nav a.l{margin-left:0;margin-right:14px}.rk{grid-template-columns:30px 44px 1fr 70px}.rk .mini,.rk a.v{display:none}}
 </style>
 </head>
 <body>
@@ -68,7 +81,7 @@ footer{padding:24px 0;color:var(--mut);font-size:13px}
 <div><h1>Find the right <em>AI tool</em> in seconds.</h1><p>A hand-picked directory of AI tools for chat, writing, research, study, coding, design, video and audio.</p><a class="btn" href="#/rankings">See the rankings →</a></div>
 <div class="stats mono"><div><b id="n">0</b>tools listed</div><div><b id="c">0</b>categories</div></div>
 </header>
-<div class="tools"><input type="search" id="q" placeholder="Search tools…" aria-label="Search"><div class="chips" id="chips"></div></div>
+<div class="tools"><input type="search" id="q" placeholder="Search tools…" aria-label="Search"><select class="sel" id="so" aria-label="Sort tools"><option value="pop">Sort: Popularity</option><option value="new">Sort: Recently Added</option><option value="az">Sort: A–Z</option></select><button class="chip sv" id="sv">★ Saved (0)</button><div class="chips" id="chips" style="width:100%"></div></div>
 <div class="grid" id="g"></div>
 </div>
 
@@ -88,8 +101,9 @@ footer{padding:24px 0;color:var(--mut);font-size:13px}
 
 <div id="v-briefing" hidden>
 <div class="pg"><h2>The Briefing</h2><p>Weekly AI headlines and what they mean.</p></div>
-<div class="row"><span class="mono">SAMPLE</span><div>Replace these rows with your weekly AI headlines.</div></div>
+<div id="bf"><div class="row"><span class="mono">SAMPLE</span><div>Replace these rows with your weekly AI headlines.</div></div>
 <div class="row"><span class="mono">SAMPLE</span><div>Later: connect Supabase so you can add news from an admin page.</div></div>
+</div>
 <div style="height:48px"></div>
 </div>
 </div>
@@ -100,6 +114,7 @@ footer{padding:24px 0;color:var(--mut);font-size:13px}
 <div id="msg" class="mono" style="margin-top:12px;font-size:13px"></div>
 </div></section>
 <div class="wrap"><footer>© 2026 AIndex. Listings are editorial picks; check each site for current pricing.</footer></div>
+<div class="md" id="md" hidden><div class="mb" role="dialog" aria-modal="true" aria-labelledby="mt"><button class="x" id="mx" aria-label="Close">✕</button><div id="mc"></div></div></div>
 <script>
 // name, category, description, url, quality, ease, value, features (each /10)
 const T=[
@@ -188,16 +203,139 @@ const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&qu
 const ic=t=>`<div class="ico"><img src="icons/${t[0].toLowerCase().replace(/[^a-z0-9]/g,'')}.png" alt="" onerror="this.onerror=function(){this.parentNode.textContent='${esc(t[0][0])}'};this.src='https://www.google.com/s2/favicons?domain=${new URL(t[3]).hostname}&sz=128'"></div>`;
 let cat="All",rc="All";const W={q:3,e:3,v:3,f:3};
 function chips(el,get,set,cb){el.innerHTML=C.map(c=>`<button class="chip${c==get()?" on":""}">${c}</button>`).join("");el.onclick=e=>{if(e.target.tagName!="BUTTON")return;set(e.target.textContent);[...el.children].forEach(b=>b.classList.toggle("on",b==e.target));cb()}}
-function draw(){const s=$("q").value.toLowerCase();
-const r=T.filter(t=>(cat=="All"||t[1]==cat)&&(t[0]+t[2]).toLowerCase().includes(s));
-$("g").innerHTML=r.length?r.map(t=>`<div class="card"><div class="top">${ic(t)}<span class="tag mono">${esc(t[1])}</span></div><h3>${esc(t[0])}</h3><p>${esc(t[2])}</p><a class="v" href="${t[3]}" target="_blank" rel="noopener">Visit →</a></div>`).join(""):'<div class="empty">No tools found.</div>'}
+let onlyFav=false,lastF=null,cur=-1;
+let fav=[];try{fav=JSON.parse(localStorage.getItem("aindex-fav")||"[]")}catch(e){}
+const isF=n=>fav.includes(n);
+function upd(){$("sv").textContent="★ Saved ("+fav.length+")"}
+function tog(n){fav=isF(n)?fav.filter(x=>x!=n):[...fav,n];try{localStorage.setItem("aindex-fav",JSON.stringify(fav))}catch(e){}upd();draw();rank();if(cur>=0)show(cur,1)}
+const avg=t=>(t[4]+t[5]+t[6]+t[7])/4;
+// Popularity is an editorial estimate: average score, plus a boost for household names
+const FAM=new Set(["ChatGPT","Claude","Gemini","Microsoft Copilot","Perplexity","Canva","Grammarly","Duolingo","GitHub Copilot","Midjourney","NotebookLM","Cursor","Figma","Notion AI","CapCut","ElevenLabs","Zapier","DeepSeek","Photomath","Kahoot"]);
+const pop=t=>avg(t)+(FAM.has(t[0])?3:0);
+// Pricing model (general guide). Default is Freemium.
+const PF=["DeepSeek","Pi","Semantic Scholar","ResearchRabbit"],PP=["Jasper","Sudowrite","Scite","Midjourney","Motion","Superhuman","Beautiful.ai","Surfer SEO","AdCreative.ai","Looka"];
+const price=n=>PF.includes(n)?"Free":PP.includes(n)?"Paid":"Freemium (free tier plus paid plans)";
+// Optional hand-written details. Example: "ChatGPT":{f:["Voice mode","Image generation"],p:["..."],c:["..."],pr:"Free; Plus $20/mo"}
+const D={
+"ChatGPT":{p:["Broad abilities: text, images, voice and file analysis","Large ecosystem of plugins and integrations"],c:["Best features sit behind paid plans","Can state wrong answers confidently"]},
+"Claude":{p:["Strong with long documents and careful writing","Good at coding and structured reasoning"],c:["Fewer built-in extras, for example no image generation","Free plan has usage limits"]},
+"Gemini":{p:["Deep integration with Google apps","Handles long inputs and mixed media"],c:["Quality can vary between tasks","Top features need a paid Google plan"]},
+"Microsoft Copilot":{p:["Built into Windows and Microsoft 365","Free tier with web access"],c:["Strongest features need a Microsoft 365 subscription","Experience varies between apps"]},
+"DeepSeek":{p:["Free to use","Strong reasoning and coding for the cost"],c:["Data is processed by a China-based company, a concern for some users","Fewer features and integrations than big rivals"]},
+"Perplexity":{p:["Answers come with cited sources","Fast for research questions"],c:["Citations still need checking","Free plan limits advanced searches"]},
+"NotebookLM":{p:["Answers are grounded in your own uploaded sources","Useful free tier for studying"],c:["Limited to the sources you upload","Fewer creative or editing features"]},
+"Cursor":{p:["Understands your whole codebase","Fast edits across multiple files"],c:["Heavy use needs a paid plan","AI changes still need careful review"]},
+"GitHub Copilot":{p:["Works inside popular code editors","Good at autocomplete and boilerplate"],c:["Suggestions can be wrong or insecure","Paid beyond limited free use"]},
+"Midjourney":{p:["Top-tier artistic image quality","Distinctive, consistent styles"],c:["Paid only","Takes practice to prompt well"]},
+"Canva":{p:["Very easy for non-designers","Huge template library"],c:["Premium AI features and assets need a paid plan","Designs can look generic"]},
+"Grammarly":{p:["Works across browsers and apps","Catches grammar and tone issues"],c:["Advanced features need a paid plan","Can flatten your personal writing style"]},
+"Duolingo":{p:["Gamified and motivating","Free tier available"],c:["Limited depth for advanced learners","Speaking practice is basic compared with a tutor"]},
+"Photomath":{p:["Step-by-step solutions from a photo","Simple to use"],c:["Can encourage copying instead of learning","Some explanations sit behind a paid plan"]},
+"ElevenLabs":{p:["Very natural-sounding voices","Many languages and voice cloning"],c:["Free quota is small","Voice cloning raises consent and misuse concerns"]},
+"Runway":{p:["Powerful video generation and editing tools","Widely used by creative professionals"],c:["Credits run out quickly","Clips are short and may need several retries"]},
+"Lovable":{p:["Turns prompts into working apps quickly","Approachable for non-coders"],c:["Complex apps can need manual fixes","Credit-based usage can add up"]},
+"Replit":{p:["Everything runs in the browser","Easy deployment"],c:["Costs can rise with heavy agent use","Generated code still needs review"]},
+"Notion AI":{p:["Works on your existing notes and docs","Summaries and drafts inside your workspace"],c:["Extra cost on top of Notion","Only as useful as your workspace content"]},
+"Gamma":{p:["Fast first drafts of slide decks","Easy to restyle"],c:["Output can look templated","Less fine control than traditional slide tools"]},
+"Zapier":{p:["Connects thousands of apps","No coding needed"],c:["Costs rise with task volume","Complex workflows get hard to manage"]},
+"Figma":{p:["Industry-standard for collaborative design","AI features speed up layouts"],c:["Steeper learning curve for beginners","Advanced features need paid seats"]},
+"Le Chat":{p:["Fast responses", "Strong free tier from a European provider"],c:["Smaller ecosystem than the biggest rivals", "Can trail leading models on hard tasks"]},
+"QuillBot":{p:["Handy paraphrasing and summarising", "Easy to use"],c:["Best modes need a paid plan", "Rewrites can sound mechanical or shift meaning"]},
+"Jasper":{p:["Brand-voice controls for teams", "Many marketing templates"],c:["Costs more than general chatbots", "Output needs editing to feel original"]},
+"Elicit":{p:["Speeds up literature reviews", "Extracts data from papers into tables"],c:["Limited to its own paper database", "Extractions need verification"]},
+"Consensus":{p:["Answers drawn from peer-reviewed research", "Clear summary of where studies agree"],c:["Weak on topics with little published research", "Summaries can oversimplify"]},
+"Semantic Scholar":{p:["Free to use", "Covers a vast range of papers with short summaries"],c:["Less suited to conversational Q&A", "Some papers lack full text"]},
+"Khanmigo":{p:["Guides students with questions instead of just giving answers", "Includes tools for teachers"],c:["Learner access is paid", "Can still make mistakes in advanced maths"]},
+"Wolfram Alpha":{p:["Exact computed answers for maths and science", "Trusted for calculations"],c:["Needs precise input wording", "Step-by-step solutions require Pro"]},
+"Quizlet":{p:["Easy flashcards and practice tests", "Huge library of shared study sets"],c:["Many features now sit behind a paywall", "Community sets may contain errors"]},
+"Windsurf":{p:["Agentic editor that handles multi-step edits", "Familiar VS Code-style interface"],c:["Usage credits limit the free tier", "AI changes still need review"]},
+"v0":{p:["Produces clean React and Tailwind UI quickly", "Easy handoff to Vercel"],c:["Best for front-end, less for full backends", "Credits limit heavy use"]},
+"Bolt":{p:["Full-stack prototypes in the browser", "Fast from idea to preview"],c:["Token usage can burn quickly", "Larger projects get harder to steer"]},
+"Base44":{p:["Database, login and hosting included", "Beginner-friendly"],c:["Tied to its own platform", "Complex logic can be hard to control"]},
+"Leonardo.ai":{p:["Fine control over models and styles", "Free daily credits"],c:["Results vary between models", "Best features need a paid plan"]},
+"Ideogram":{p:["Strong at rendering text inside images", "Easy to use"],c:["Free use is limited", "Less distinctive style range than some rivals"]},
+"Adobe Firefly":{p:["Trained on licensed content, aimed at commercial use", "Works with Photoshop and Illustrator"],c:["Quality can trail top rivals", "Credits are capped by plan"]},
+"Pika":{p:["Quick, playful short clips", "Simple interface"],c:["Clips are short and less detailed than the leaders", "Credits run out fast"]},
+"Luma Dream Machine":{p:["Realistic motion from text or images", "Easy to try"],c:["Clips are short", "Free quota is limited"]},
+"HeyGen":{p:["Realistic avatars and lip-synced translation", "Saves filming time"],c:["Pricey for heavy use", "Avatars can still look slightly artificial"]},
+"Synthesia":{p:["Polished AI presenters for training videos", "Many languages"],c:["Expensive for individuals", "Presenters feel formal, less natural for casual content"]},
+"Suno":{p:["Full songs with vocals from a short prompt", "Fast and fun"],c:["Copyright questions around AI music remain", "Limited fine control over arrangement"]},
+"Descript":{p:["Edit audio and video by editing text", "Removes filler words quickly"],c:["Takes time to learn", "Full features need a subscription"]},
+"Otter.ai":{p:["Live meeting transcription", "Automatic summaries"],c:["Accuracy drops with noise and strong accents", "Free plan limits minutes"]},
+"Poe":{p:["Many AI models in one place", "Lets you build custom bots"],c:["Usage is limited by points", "Less depth than each model's own app"]},
+"Pi":{p:["Warm, conversational tone", "Free and simple"],c:["Not built for coding or long documents", "Fewer features than rivals"]},
+"Writesonic":{p:["Handy for blog and SEO content", "Many templates"],c:["Output needs editing for accuracy", "Credit limits on lower plans"]},
+"Sudowrite":{p:["Built for fiction: brainstorming and rewriting", "Controls for style and tone"],c:["Paid, with limited trial use", "Can drift from your own voice"]},
+"Scite":{p:["Shows whether later papers support or contradict a study", "Useful for checking claims"],c:["Paid", "Coverage depends on available full text"]},
+"ResearchRabbit":{p:["Visual maps of related papers", "Free to use"],c:["Doesn't write summaries", "Recommendations depend on your starting set"]},
+"MagicSchool":{p:["Many teacher tools: lesson plans, rubrics, differentiation", "Free tier for teachers"],c:["Output needs review for accuracy", "May need adapting to your own curriculum, such as CBSE"]},
+"Diffit":{p:["Adapts text to different reading levels quickly", "Generates questions and vocabulary"],c:["Content accuracy needs checking", "Narrow focus on reading materials"]},
+"Curipod":{p:["Builds interactive lessons fast", "Engaging polls and activities"],c:["Generated slides need editing", "Best features are paid"]},
+"Kahoot":{p:["Highly engaging classroom quizzes", "AI generates questions from a topic or document"],c:["Advanced features are paid", "Generated questions need checking"]},
+"Tabnine":{p:["Privacy-focused with private deployment options", "Works in many editors"],c:["Suggestions can lag newer rivals", "Paid plans needed for full features"]},
+"Julius AI":{p:["Chat with your data to make charts quickly", "No coding needed"],c:["Results need checking for errors", "Free usage limits"]},
+"Rows":{p:["Spreadsheet with built-in AI analysis", "Easy integrations with other apps"],c:["Smaller ecosystem than Excel or Google Sheets", "Some features need a paid plan"]},
+"Framer":{p:["Design and publish sites in one place", "Polished animations"],c:["Costs grow with more sites", "Less flexible than hand-coding"]},
+"Uizard":{p:["Turns prompts or sketches into mockups", "Beginner-friendly"],c:["Less precise than Figma for detailed design", "Output can look generic"]},
+"Looka":{p:["Fast logo and brand kit generation", "Easy for beginners"],c:["Logos can look generic", "Downloading high-quality files costs money"]},
+"Remove.bg":{p:["Removes backgrounds in seconds", "Very simple"],c:["Edges can be imperfect on hair or complex scenes", "High-resolution downloads cost credits"]},
+"Clipdrop":{p:["Collection of handy image tools", "Quick to use"],c:["Free tier has limits", "Results vary by tool"]},
+"Kling":{p:["Strong video quality and motion", "Frequent updates"],c:["Free credits are limited", "Generation can be slow at peak times"]},
+"VEED":{p:["Easy browser-based editing with auto subtitles", "Good for social videos"],c:["Free exports carry a watermark", "Subtitles need proofreading"]},
+"Opus Clip":{p:["Auto-cuts long videos into short clips", "Saves editing time"],c:["Clip selection can miss the best moments", "Free plan is limited"]},
+"CapCut":{p:["Powerful free editing with auto captions", "Beginner-friendly"],c:["Some effects and exports need Pro", "Heavier on phones and low-end PCs"]},
+"Murf":{p:["Natural voiceovers in many languages", "Simple editor"],c:["Free tier is limited", "Less expressive than the top voice tools"]},
+"Krisp":{p:["Effective noise cancellation on calls", "Works with most meeting apps"],c:["Free plan has limited minutes", "Can occasionally clip speech"]},
+"Fireflies.ai":{p:["Records, transcribes and summarises meetings", "Integrates with many tools"],c:["A bot joining calls can bother participants", "Free plan limits storage and AI summaries"]},
+"Motion":{p:["Auto-schedules tasks around your calendar", "Cuts planning time"],c:["Expensive, with no free plan", "Can feel rigid if your day changes often"]},
+"Superhuman":{p:["Very fast email workflow", "AI helps draft and triage"],c:["Expensive", "Mainly worthwhile for heavy email users"]},
+"Taskade":{p:["Combines tasks, notes and AI agents", "Free tier available"],c:["Can feel cluttered", "Fewer integrations than larger tools"]},
+"Mem":{p:["Self-organising notes", "Fast capture"],c:["Less established than Notion or Obsidian", "AI features may need a subscription"]},
+"Copy.ai":{p:["Workflow automation for sales and marketing", "Templates speed up drafts"],c:["Output needs editing", "Aimed at teams more than individuals"]},
+"Surfer SEO":{p:["Data-driven content guidelines", "Helps optimise articles"],c:["Pricey", "Chasing the score can hurt readability"]},
+"AdCreative.ai":{p:["Generates many ad variations quickly", "Gives performance scores"],c:["Creative can look repetitive", "Performance predictions are not guarantees"]},
+"Beautiful.ai":{p:["Smart layouts keep slides tidy", "Fast for non-designers"],c:["Less layout freedom", "No free plan"]}
+};
+const star=n=>`<button class="star${isF(n)?" on":""}" data-s="${esc(n)}" aria-pressed="${isF(n)}" aria-label="Save ${esc(n)}">★</button>`;
+function draw(){const s=$("q").value.toLowerCase(),o=$("so").value;
+const r=T.map((t,i)=>[t,i]).filter(([t])=>(cat=="All"||t[1]==cat)&&(!onlyFav||isF(t[0]))&&(t[0]+t[2]).toLowerCase().includes(s))
+.sort((a,b)=>o=="az"?a[0][0].localeCompare(b[0][0]):o=="new"?b[1]-a[1]:pop(b[0])-pop(a[0]));
+$("g").innerHTML=r.length?r.map(([t,i])=>`<div class="card" data-i="${i}" tabindex="0" role="button"><div class="top">${ic(t)}<div style="display:flex;gap:8px;align-items:center"><span class="tag mono">${esc(t[1])}</span>${star(t[0])}</div></div><h3>${esc(t[0])}</h3><p>${esc(t[2])}</p><a class="v" href="${t[3]}" target="_blank" rel="noopener">Visit →</a></div>`).join(""):`<div class="empty">${onlyFav&&!fav.length?"No saved tools yet. Click ★ on any card to save it.":"No tools found."}</div>`}
 function rank(){const sum=W.q+W.e+W.v+W.f;
-const r=T.filter(t=>rc=="All"||t[1]==rc).map(t=>[t,sum?(t[4]*W.q+t[5]*W.e+t[6]*W.v+t[7]*W.f)/sum:0]).sort((a,b)=>b[1]-a[1]);
-$("rk").innerHTML=r.map(([t,s],i)=>`<div class="rk${i<3?" t3":""}"><b class="n">${i+1}</b>${ic(t)}<div><h3>${esc(t[0])}</h3><span class="tag mono">${esc(t[1])}</span></div><div class="mini mono">Quality ${t[4]} · Ease ${t[5]}<br>Value ${t[6]} · Features ${t[7]}</div><div class="sc"><b>${s.toFixed(1)}</b><div><i style="width:${s*10}%"></i></div></div><a class="v" href="${t[3]}" target="_blank" rel="noopener">Visit →</a></div>`).join("")}
+const r=T.map((t,i)=>[t,i]).filter(([t])=>rc=="All"||t[1]==rc).map(([t,i])=>[t,i,sum?(t[4]*W.q+t[5]*W.e+t[6]*W.v+t[7]*W.f)/sum:0]).sort((a,b)=>b[2]-a[2]);
+$("rk").innerHTML=r.map(([t,i,s],k)=>`<div class="rk${k<3?" t3":""}" data-i="${i}"><b class="n">${k+1}</b>${ic(t)}<div><h3>${esc(t[0])}</h3><span class="tag mono">${esc(t[1])}</span></div><div class="mini mono">Quality ${t[4]} · Ease ${t[5]}<br>Value ${t[6]} · Features ${t[7]}</div><div class="sc"><b>${s.toFixed(1)}</b><div><i style="width:${s*10}%"></i></div></div><a class="v" href="${t[3]}" target="_blank" rel="noopener">Visit →</a></div>`).join("")}
+function show(i,keep){cur=i;const t=T[i],d=D[t[0]]||{},pros=[],cons=[];
+const alts=T.map((x,j)=>[x,j]).filter(([x,j])=>j!=i&&x[1]==t[1]).sort((u,w)=>avg(w[0])-avg(u[0])).slice(0,3);
+const li=a=>a.map(x=>`<li>${esc(x)}</li>`).join("");
+$("mc").innerHTML=`<div class="mh">${ic(t)}<div><h2 id="mt">${esc(t[0])}</h2><span class="tag mono">${esc(t[1])}</span></div>${star(t[0])}</div>
+<h4>What it does</h4><p>${esc(t[2])}</p>${d.f?`<ul style="margin-top:8px">${li(d.f)}</ul>`:""}
+<h4>Scores</h4>${[["Quality",4],["Ease of use",5],["Value",6],["Features",7]].map(([l,k])=>`<div class="br"><span>${l}</span><div><i style="width:${t[k]*10}%"></i></div><b>${t[k]}</b></div>`).join("")}
+${d.p?`<div class="pc"><div><h4>Pros</h4><ul>${li(d.p)}</ul></div><div><h4>Cons</h4><ul>${li(d.c)}</ul></div></div>`:`<h4>Pros &amp; cons</h4><p>Detailed review coming soon.</p>`}
+<h4>Pricing</h4><p>${esc(d.pr||price(t[0]))}. Plans change often, so check the official page.</p>
+<h4>Alternatives</h4><div class="alt">${alts.map(([x,j])=>`<button class="chip" data-a="${j}">${esc(x[0])}</button>`).join("")||"<p>None listed yet.</p>"}</div>
+<div style="margin-top:22px;display:flex;gap:10px;flex-wrap:wrap"><a class="btn" href="${t[3]}" target="_blank" rel="noopener">Visit ${esc(t[0])} →</a></div>`;
+if(!keep){lastF=document.activeElement;$("md").hidden=false;document.body.style.overflow="hidden";$("md").scrollTop=0;document.querySelector(".mb").scrollTop=0;$("mx").focus()}}
+function hide(){cur=-1;$("md").hidden=true;document.body.style.overflow="";if(lastF)lastF.focus()}
 ["q","e","v","f"].forEach(k=>$("w-"+k).oninput=e=>{W[k]=+e.target.value;$("o-"+k).textContent=W[k];rank()});
 $("n").textContent=T.length;$("c").textContent=C.length-1;
 chips($("chips"),()=>cat,v=>cat=v,draw);chips($("rchips"),()=>rc,v=>rc=v,rank);
-$("q").oninput=draw;draw();rank();
+$("q").oninput=draw;$("so").onchange=draw;
+$("sv").onclick=()=>{onlyFav=!onlyFav;$("sv").classList.toggle("on",onlyFav);draw()};
+$("g").onclick=e=>{const b=e.target.closest(".star");if(b){tog(b.dataset.s);return}if(e.target.closest("a"))return;const c=e.target.closest(".card");if(c)show(+c.dataset.i)};
+$("g").onkeydown=e=>{if(e.key=="Enter"&&e.target.classList.contains("card"))show(+e.target.dataset.i)};
+$("rk").onclick=e=>{if(e.target.closest("a"))return;const c=e.target.closest(".rk");if(c)show(+c.dataset.i)};
+$("mc").onclick=e=>{const b=e.target.closest(".star"),a=e.target.closest("[data-a]");if(b)tog(b.dataset.s);else if(a){show(+a.dataset.a,1);document.querySelector(".mb").scrollTop=0}};
+$("mx").onclick=hide;$("md").onclick=e=>{if(e.target==$("md"))hide()};
+addEventListener("keydown",e=>{if(e.key=="Escape"&&!$("md").hidden)hide()});
+draw();rank();upd();
+// One-time setup: paste your Supabase Project URL and anon (public) key
+const SUPA_URL="",SUPA_KEY="";
+async function loadBrief(){if(!SUPA_URL||!SUPA_KEY)return;const el=$("bf");
+try{const r=await fetch(`${SUPA_URL}/rest/v1/briefing?select=*&published=eq.true&order=created_at.desc&limit=30`,{headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}});
+if(!r.ok)throw 0;const d=await r.json();
+el.innerHTML=d.length?d.map(n=>{const u=/^https?:\/\//.test(n.url||"")?n.url:"";return `<div class="row"><span class="mono">${new Date(n.created_at).toLocaleDateString("en-IN",{day:"numeric",month:"short"})}<br>${esc(n.tag||"News")}</span><div><b>${u?`<a class="v" href="${u}" target="_blank" rel="noopener">${esc(n.title)}</a>`:esc(n.title)}</b><p style="margin:4px 0 0;color:var(--mut);font-size:14px">${esc(n.summary||"")}</p></div></div>`}).join(""):'<div class="row">No briefings yet.</div>'}
+catch(e){el.insertAdjacentHTML("afterbegin",'<div class="row mono" style="color:var(--mut)">Could not load live news.</div>')}}
+loadBrief();
 function route(){const h=location.hash.slice(2)||"home";
 if(h=="join"){$("join").scrollIntoView();return}
 const v=["home","rankings","briefing"].includes(h)?h:"home";
