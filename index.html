@@ -203,7 +203,12 @@ const T=[
 const C=["All",...new Set(T.map(t=>t[1]))];
 const $=id=>document.getElementById(id);
 const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const ic=t=>`<div class="ico"><img src="icons/${t[0].toLowerCase().replace(/[^a-z0-9]/g,'')}.png" alt="" onerror="this.onerror=function(){this.parentNode.textContent='${esc(t[0][0])}'};this.src='https://www.google.com/s2/favicons?domain=${new URL(t[3]).hostname}&sz=128'"></div>`;
+const ic=t=>{
+  const src = t[0] === "Microsoft Copilot" 
+    ? "https://cdn.simpleicons.org/microsoftcopilot" 
+    : "https://www.google.com/s2/favicons?domain=" + new URL(t[3]).hostname + "&sz=128";
+  return `<div class="ico"><img src="${src}" alt="" onerror="this.parentNode.textContent='${esc(t[0][0])}'"></div>`;
+};
 let cat="All",rc="All";const W={q:3,e:3,v:3,f:3};
 function chips(el,get,set,cb){el.innerHTML=C.map(c=>`<button class="chip${c==get()?" on":""}">${c}</button>`).join("");el.onclick=e=>{if(e.target.tagName!="BUTTON")return;set(e.target.textContent);[...el.children].forEach(b=>b.classList.toggle("on",b==e.target));cb()}}
 let onlyFav=false,lastF=null,cur=-1,V=null;
