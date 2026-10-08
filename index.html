@@ -69,6 +69,8 @@ footer{padding:24px 0;color:var(--mut);font-size:13px}
 .mb ul{margin:0;padding-left:18px;color:var(--mut);font-size:14px}.mb li{margin:3px 0}.mb p{color:var(--mut);margin:0;font-size:15px}
 .br{display:grid;grid-template-columns:90px 1fr 24px;gap:10px;align-items:center;font-size:13px;color:var(--mut);margin:4px 0}.br div{height:5px;background:var(--line);border-radius:3px}.br i{display:block;height:100%;background:var(--acc);border-radius:3px}
 .alt{display:flex;gap:8px;flex-wrap:wrap}
+.why{color:var(--acc)!important;font-size:13px!important;flex:none!important}
+.vb{padding:6px 0 14px;font-size:14px;color:var(--mut);display:flex;gap:10px;align-items:center;flex-wrap:wrap}.vb[hidden]{display:none}
 @media(max-width:720px){.pc{grid-template-columns:1fr}.hero{grid-template-columns:1fr;padding-top:40px}nav a.l{margin-left:0;margin-right:14px}.rk{grid-template-columns:30px 44px 1fr 70px}.rk .mini,.rk a.v{display:none}}
 </style>
 </head>
@@ -81,7 +83,8 @@ footer{padding:24px 0;color:var(--mut);font-size:13px}
 <div><h1>Find the right <em>AI tool</em> in seconds.</h1><p>A hand-picked directory of AI tools for chat, writing, research, study, coding, design, video and audio.</p><a class="btn" href="#/rankings">See the rankings →</a></div>
 <div class="stats mono"><div><b id="n">0</b>tools listed</div><div><b id="c">0</b>categories</div></div>
 </header>
-<div class="tools"><input type="search" id="q" placeholder="Search tools…" aria-label="Search"><select class="sel" id="so" aria-label="Sort tools"><option value="pop">Sort: Popularity</option><option value="new">Sort: Recently Added</option><option value="az">Sort: A–Z</option></select><button class="chip sv" id="sv">★ Saved (0)</button><div class="chips" id="chips" style="width:100%"></div></div>
+<div class="tools"><input type="search" id="q" placeholder="Describe what you need, e.g. make revision videos for class 12 physics" aria-label="Search" style="min-width:260px"><button class="btn" id="vs" style="padding:12px 16px">✨ Vibe search</button><select class="sel" id="so" aria-label="Sort tools"><option value="pop">Sort: Popularity</option><option value="new">Sort: Recently Added</option><option value="az">Sort: A–Z</option></select><button class="chip sv" id="sv">★ Saved (0)</button><div class="chips" id="chips" style="width:100%"></div></div>
+<div class="vb" id="vb" hidden></div>
 <div class="grid" id="g"></div>
 </div>
 
@@ -203,7 +206,7 @@ const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&qu
 const ic=t=>`<div class="ico"><img src="icons/${t[0].toLowerCase().replace(/[^a-z0-9]/g,'')}.png" alt="" onerror="this.onerror=function(){this.parentNode.textContent='${esc(t[0][0])}'};this.src='https://www.google.com/s2/favicons?domain=${new URL(t[3]).hostname}&sz=128'"></div>`;
 let cat="All",rc="All";const W={q:3,e:3,v:3,f:3};
 function chips(el,get,set,cb){el.innerHTML=C.map(c=>`<button class="chip${c==get()?" on":""}">${c}</button>`).join("");el.onclick=e=>{if(e.target.tagName!="BUTTON")return;set(e.target.textContent);[...el.children].forEach(b=>b.classList.toggle("on",b==e.target));cb()}}
-let onlyFav=false,lastF=null,cur=-1;
+let onlyFav=false,lastF=null,cur=-1,V=null;
 let fav=[];try{fav=JSON.parse(localStorage.getItem("aindex-fav")||"[]")}catch(e){}
 const isF=n=>fav.includes(n);
 function upd(){$("sv").textContent="★ Saved ("+fav.length+")"}
@@ -297,10 +300,37 @@ const D={
 "Beautiful.ai":{p:["Smart layouts keep slides tidy", "Fast for non-designers"],c:["Less layout freedom", "No free plan"]}
 };
 const star=n=>`<button class="star${isF(n)?" on":""}" data-s="${esc(n)}" aria-pressed="${isF(n)}" aria-label="Save ${esc(n)}">★</button>`;
-function draw(){const s=$("q").value.toLowerCase(),o=$("so").value;
-const r=T.map((t,i)=>[t,i]).filter(([t])=>(cat=="All"||t[1]==cat)&&(!onlyFav||isF(t[0]))&&(t[0]+t[2]).toLowerCase().includes(s))
+function draw(){const o=$("so").value,w=$("q").value.toLowerCase().trim(),s=w.split(/\s+/).length<3?w:"";
+let r;
+if(V)r=V.list.map(([i,y])=>[T[i],i,y]);
+else r=T.map((t,i)=>[t,i,""]).filter(([t])=>(cat=="All"||t[1]==cat)&&(!onlyFav||isF(t[0]))&&(t[0]+t[2]).toLowerCase().includes(s))
 .sort((a,b)=>o=="az"?a[0][0].localeCompare(b[0][0]):o=="new"?b[1]-a[1]:pop(b[0])-pop(a[0]));
-$("g").innerHTML=r.length?r.map(([t,i])=>`<div class="card" data-i="${i}" tabindex="0" role="button"><div class="top">${ic(t)}<div style="display:flex;gap:8px;align-items:center"><span class="tag mono">${esc(t[1])}</span>${star(t[0])}</div></div><h3>${esc(t[0])}</h3><p>${esc(t[2])}</p><a class="v" href="${t[3]}" target="_blank" rel="noopener">Visit →</a></div>`).join(""):`<div class="empty">${onlyFav&&!fav.length?"No saved tools yet. Click ★ on any card to save it.":"No tools found."}</div>`}
+$("g").innerHTML=r.length?r.map(([t,i,y])=>`<div class="card" data-i="${i}" tabindex="0" role="button"><div class="top">${ic(t)}<div style="display:flex;gap:8px;align-items:center"><span class="tag mono">${esc(t[1])}</span>${star(t[0])}</div></div><h3>${esc(t[0])}</h3>${y?`<p class="why">✨ ${esc(y)}</p>`:""}<p>${esc(t[2])}</p><a class="v" href="${t[3]}" target="_blank" rel="noopener">Visit →</a></div>`).join(""):`<div class="empty">${onlyFav&&!fav.length?"No saved tools yet. Click ★ on any card to save it.":"No tools found."}</div>`}
+// Vibe search: free, runs entirely in the browser (no API, no cost)
+const CON=[
+[/stud|exam|homework|revis|learn|student|class ?1[0-2]|cbse|physics|chem|math|biology|neet|jee/,["Study","Teaching"]],
+[/teach|lesson|worksheet|classroom|quiz|rubric|school/,["Teaching"]],
+[/cod|program|develop|debug|script|software/,["Coding"]],
+[/app|website|site|landing|prototype|no.?code/,["App Builders","Design"]],
+[/image|picture|photo|logo|poster|art|illustrat|thumbnail/,["Image","Design"]],
+[/design|mockup|ui|ux|brand/,["Design"]],
+[/video|reel|clip|youtube|short|edit|avatar|subtitle|caption/,["Video"]],
+[/voice|music|song|podcast|audio|narrat|sound|noise|transcri/,["Audio"]],
+[/writ|essay|blog|email|grammar|story|paraphras|article/,["Writing"]],
+[/research|paper|cite|citation|journal|thesis|literature|scholar/,["Research"]],
+[/data|excel|sheet|chart|analy|csv/,["Data"]],
+[/market|seo|ads|sales|campaign|copywrit/,["Marketing"]],
+[/meeting|note|schedul|task|slide|presentation|deck|automat|calendar|inbox/,["Productivity"]],
+[/chat|assistant|answer|ask|question|general|brainstorm/,["Chatbots"]]];
+function local(q){const l=q.toLowerCase(),cs=new Set();CON.forEach(([re,c])=>{if(re.test(l))c.forEach(x=>cs.add(x))});
+const w=l.split(/[^a-z0-9]+/).filter(x=>x.length>2);
+return T.map((t,i)=>{const h=(t[0]+" "+t[1]+" "+t[2]).toLowerCase(),mw=w.filter(x=>h.includes(x.slice(0,5)));
+const s=(cs.has(t[1])?3:0)+mw.length*2+(/free|cheap/.test(l)&&price(t[0])!="Paid"?1:0);
+return[i,s>0?s+avg(t)/10:0,"Fits "+t[1].toLowerCase()+(mw.length?" · matches “"+mw.slice(0,2).join(", ")+"”":"")]}).filter(x=>x[1]>0).sort((u,v)=>v[1]-u[1]).slice(0,12).map(([i,,y])=>[i,y])}
+function clearV(inp){V=null;$("vb").hidden=true;if(inp===true)$("q").value="";draw()}
+function vibe(){const q=$("q").value.trim();if(q.length<3)return;
+const list=local(q);V={q,list};const b=$("vb");b.hidden=false;
+b.innerHTML=`<span>✨ Smart matches for “${esc(q)}”</span><button class="chip" id="vc">Clear</button>${list.length?"":"<span>Nothing matched. Try different words.</span>"}`;draw()}
 function rank(){const sum=W.q+W.e+W.v+W.f;
 const r=T.map((t,i)=>[t,i]).filter(([t])=>rc=="All"||t[1]==rc).map(([t,i])=>[t,i,sum?(t[4]*W.q+t[5]*W.e+t[6]*W.v+t[7]*W.f)/sum:0]).sort((a,b)=>b[2]-a[2]);
 $("rk").innerHTML=r.map(([t,i,s],k)=>`<div class="rk${k<3?" t3":""}" data-i="${i}"><b class="n">${k+1}</b>${ic(t)}<div><h3>${esc(t[0])}</h3><span class="tag mono">${esc(t[1])}</span></div><div class="mini mono">Quality ${t[4]} · Ease ${t[5]}<br>Value ${t[6]} · Features ${t[7]}</div><div class="sc"><b>${s.toFixed(1)}</b><div><i style="width:${s*10}%"></i></div></div><a class="v" href="${t[3]}" target="_blank" rel="noopener">Visit →</a></div>`).join("")}
@@ -318,9 +348,9 @@ if(!keep){lastF=document.activeElement;$("md").hidden=false;document.body.style.
 function hide(){cur=-1;$("md").hidden=true;document.body.style.overflow="";if(lastF)lastF.focus()}
 ["q","e","v","f"].forEach(k=>$("w-"+k).oninput=e=>{W[k]=+e.target.value;$("o-"+k).textContent=W[k];rank()});
 $("n").textContent=T.length;$("c").textContent=C.length-1;
-chips($("chips"),()=>cat,v=>cat=v,draw);chips($("rchips"),()=>rc,v=>rc=v,rank);
-$("q").oninput=draw;$("so").onchange=draw;
-$("sv").onclick=()=>{onlyFav=!onlyFav;$("sv").classList.toggle("on",onlyFav);draw()};
+chips($("chips"),()=>cat,v=>cat=v,()=>clearV());chips($("rchips"),()=>rc,v=>rc=v,rank);
+$("q").oninput=()=>{if(V&&!$("q").value.trim())clearV();else draw()};$("q").onkeydown=e=>{if(e.key=="Enter")vibe()};$("vs").onclick=vibe;$("vb").onclick=e=>{if(e.target.id=="vc")clearV(true)};$("so").onchange=()=>clearV();
+$("sv").onclick=()=>{onlyFav=!onlyFav;$("sv").classList.toggle("on",onlyFav);clearV()};
 $("g").onclick=e=>{const b=e.target.closest(".star");if(b){tog(b.dataset.s);return}if(e.target.closest("a"))return;const c=e.target.closest(".card");if(c)show(+c.dataset.i)};
 $("g").onkeydown=e=>{if(e.key=="Enter"&&e.target.classList.contains("card"))show(+e.target.dataset.i)};
 $("rk").onclick=e=>{if(e.target.closest("a"))return;const c=e.target.closest(".rk");if(c)show(+c.dataset.i)};
