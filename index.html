@@ -358,13 +358,10 @@ $("mc").onclick=e=>{const b=e.target.closest(".star"),a=e.target.closest("[data-
 $("mx").onclick=hide;$("md").onclick=e=>{if(e.target==$("md"))hide()};
 addEventListener("keydown",e=>{if(e.key=="Escape"&&!$("md").hidden)hide()});
 draw();rank();upd();
-// One-time setup: paste your Supabase Project URL and anon (public) key
-const SUPA_URL="",SUPA_KEY="";
-async function loadBrief(){if(!SUPA_URL||!SUPA_KEY)return;const el=$("bf");
-try{const r=await fetch(`${SUPA_URL}/rest/v1/briefing?select=*&published=eq.true&order=created_at.desc&limit=30`,{headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY}});
-if(!r.ok)throw 0;const d=await r.json();
-el.innerHTML=d.length?d.map(n=>{const u=/^https?:\/\//.test(n.url||"")?n.url:"";return `<div class="row"><span class="mono">${new Date(n.created_at).toLocaleDateString("en-IN",{day:"numeric",month:"short"})}<br>${esc(n.tag||"News")}</span><div><b>${u?`<a class="v" href="${u}" target="_blank" rel="noopener">${esc(n.title)}</a>`:esc(n.title)}</b><p style="margin:4px 0 0;color:var(--mut);font-size:14px">${esc(n.summary||"")}</p></div></div>`}).join(""):'<div class="row">No briefings yet.</div>'}
-catch(e){el.insertAdjacentHTML("afterbegin",'<div class="row mono" style="color:var(--mut)">Could not load live news.</div>')}}
+async function loadBrief(){const el=$("bf");
+try{const r=await fetch("news.json?"+Date.now());if(!r.ok)throw 0;const d=(await r.json()).sort((a,b)=>new Date(b.date)-new Date(a.date));
+el.innerHTML=d.length?d.map(p=>{const u=/^https?:\/\//.test(p.link||"")?p.link:"";const t=esc(p.title);return `<div class="row"><span class="mono">${new Date(p.date).toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"})}</span><div><b>${u?`<a href="${esc(u)}" target="_blank" rel="noopener">${t}</a>`:t}</b>${p.tag?` <span class="tag mono">${esc(p.tag)}</span>`:""}<p>${esc(p.summary)}</p></div></div>`}).join(""):'<div class="row"><div>No posts yet.</div></div>'}
+catch(e){el.innerHTML='<div class="row"><div>Could not load the briefing. Try again later.</div></div>'}}
 loadBrief();
 function route(){const h=location.hash.slice(2)||"home";
 if(h=="join"){$("join").scrollIntoView();return}
