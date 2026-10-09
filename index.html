@@ -540,7 +540,6 @@ function rt(){const h=location.hash;if(h=="#/join")return;const on=h=="#/categor
 addEventListener("hashchange",rt);rt();
 })();
 (()=>{
-(()=>{
 const COL=["#22d3ee","#fbbf24","#f472b6","#4ade80","#a78bfa"],AXN=["Quality","Ease","Value","Features","Free access"];
 const FA=t=>{const p=typeof price=="function"?price(t[0]):"Freemium";return p=="Free"?10:p=="Paid"?4:7};
 const RW=[["Quality",t=>t[4]],["Ease of use",t=>t[5]],["Value for money",t=>t[6]],["Features",t=>t[7]],["Free access",FA]];
