@@ -6,6 +6,10 @@
 <title>AIndex — The AI Tools Directory</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
+.ar-add{display:flex;flex-direction:column;gap:8px;justify-content:center;border-left:1px dashed var(--line);color:var(--mut);font-size:13px}
+.ar-add .sel{width:100%}
+.ar-fill{border-left:1px dashed var(--line)}
+.ar-addbox{max-width:260px;margin:12px 0}
 #v-arena{animation:vin .45s cubic-bezier(.2,.8,.2,1)}
 .ar-top{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}.ar-top .sel{min-width:220px}
 .ar-top2{display:grid;grid-template-columns:340px 1fr;gap:24px;align-items:center;margin-bottom:22px}
@@ -172,6 +176,10 @@ nav::before{content:"";position:absolute;inset:0 -100vmax;z-index:-1;background:
 .cats b{display:block;font:500 26px/1 'IBM Plex Mono',monospace;color:var(--acc)}
 .cats span{display:block;font-size:14px;font-weight:700;margin-top:8px}
 .cats small{display:block;color:var(--mut);font-size:12px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+(()=>{const sb=document.querySelector(".sur");if(!sb)return;
+const f=()=>{if(location.hash=="#/join")return;sb.style.display=$("v-home").hidden?"none":""};
+addEventListener("hashchange",()=>setTimeout(f,0));setTimeout(f,0);
+})();
 </style>
 </head>
 <body>
@@ -532,38 +540,40 @@ function rt(){const h=location.hash;if(h=="#/join")return;const on=h=="#/categor
 addEventListener("hashchange",rt);rt();
 })();
 (()=>{
-const COL=["#22d3ee","#fbbf24","#f472b6","#4ade80","#a78bfa"],RW=[["Quality",4],["Ease of use",5],["Value",6],["Features",7]];
+(()=>{
+const COL=["#22d3ee","#fbbf24","#f472b6","#4ade80","#a78bfa"],AXN=["Quality","Ease","Value","Features","Free access"];
+const FA=t=>{const p=typeof price=="function"?price(t[0]):"Freemium";return p=="Free"?10:p=="Paid"?4:7};
+const RW=[["Quality",t=>t[4]],["Ease of use",t=>t[5]],["Value for money",t=>t[6]],["Features",t=>t[7]],["Free access",FA]];
 const avg=t=>(t[4]+t[5]+t[6]+t[7])/4,ix=n=>T.findIndex(t=>t[0]==n);
 const MU=[["ChatGPT","Claude","Gemini"],["Cursor","GitHub Copilot","Windsurf"],["Midjourney","Leonardo.ai","Ideogram"],["Lovable","Bolt","v0"],["Perplexity","Elicit","Consensus"],["Canva","Figma"]];
 const cats=[...new Set(T.map(t=>t[1]))];
 let sel=MU[0].map(ix).filter(i=>i>=0);
 const V=document.createElement("div");V.id="v-arena";V.hidden=true;
 V.innerHTML=`<div class="pg"><h2>The <em style="font-style:normal;color:var(--acc)">Arena</em></h2><p>Pick 2 to 5 tools and see how they stack up head to head.</p></div>
-<div class="ar-top"><select class="sel" id="ar-add" aria-label="Add a tool"></select><button class="chip" id="ar-rand">🎲 Random matchup</button></div>
-<div class="chips" id="ar-mu" style="margin-bottom:20px"><span class="mini mono" style="align-self:center">Popular matchups:</span>${MU.map((m,k)=>`<button class="chip" data-m="${k}">${esc(m.join(" vs "))}</button>`).join("")}</div>
+<div class="chips" style="margin-bottom:20px"><span class="mini mono" style="align-self:center">Popular matchups:</span>${MU.map((m,k)=>`<button class="chip" data-m="${k}">${esc(m.join(" vs "))}</button>`).join("")}<button class="chip" id="ar-rand">🎲 Random matchup</button></div>
 <div id="ar-out"></div><div style="height:56px"></div>`;
 document.getElementById("v-briefing").after(V);
-const out=V.querySelector("#ar-out"),add=V.querySelector("#ar-add");
-function radar(){const Cx=170,Cy=150,R=95,P=(k,r)=>{const a=[-90,0,90,180][k]*Math.PI/180;return[Cx+Math.cos(a)*r,Cy+Math.sin(a)*r].map(n=>n.toFixed(1))};
-const ring=f=>`<polygon points="${[0,1,2,3].map(k=>P(k,R*f).join(",")).join(" ")}" fill="none" stroke="var(--line)"/>`;
-return `<svg viewBox="0 0 340 300" class="ar-rd" role="img" aria-label="Radar chart comparing the selected tools">${[.25,.5,.75,1].map(ring).join("")}${[0,1,2,3].map(k=>{const p=P(k,R);return `<line x1="${Cx}" y1="${Cy}" x2="${p[0]}" y2="${p[1]}" stroke="var(--line)"/>`}).join("")}${sel.map((i,n)=>`<polygon class="ar-p" points="${RW.map(([,j],k)=>P(k,R*T[i][j]/10).join(",")).join(" ")}" fill="${COL[n]}" fill-opacity=".16" stroke="${COL[n]}" stroke-width="2" stroke-linejoin="round"/>`).join("")}<text x="170" y="36" text-anchor="middle">Quality</text><text x="276" y="154">Ease</text><text x="170" y="274" text-anchor="middle">Value</text><text x="8" y="154">Features</text></svg>`}
+const out=V.querySelector("#ar-out");
+const selHtml=()=>`<select class="sel" id="ar-add" aria-label="Add a tool"><option value="">+ Add a tool…</option>${cats.map(c=>`<optgroup label="${esc(c)}">${T.map((t,i)=>[t,i]).filter(([t,i])=>t[1]==c&&!sel.includes(i)).map(([t,i])=>`<option value="${i}">${esc(t[0])}</option>`).join("")}</optgroup>`).join("")}</select>`;
+function radar(){const Cx=170,Cy=150,R=88,ang=k=>(-90+72*k)*Math.PI/180,P=(k,r)=>[Cx+Math.cos(ang(k))*r,Cy+Math.sin(ang(k))*r].map(n=>n.toFixed(1)).join(",");
+const K=[0,1,2,3,4];
+return `<svg viewBox="0 0 340 262" class="ar-rd" role="img" aria-label="Pentagon chart comparing the selected tools">${[.25,.5,.75,1].map(f=>`<polygon points="${K.map(k=>P(k,R*f)).join(" ")}" fill="none" stroke="var(--line)"/>`).join("")}${K.map(k=>`<line x1="${Cx}" y1="${Cy}" x2="${P(k,R).split(",")[0]}" y2="${P(k,R).split(",")[1]}" stroke="var(--line)"/>`).join("")}${sel.map((i,n)=>`<polygon class="ar-p" points="${K.map(k=>P(k,R*RW[k][1](T[i])/10)).join(" ")}" fill="${COL[n]}" fill-opacity=".16" stroke="${COL[n]}" stroke-width="2" stroke-linejoin="round"/>`).join("")}${AXN.map((l,k)=>{const c=Math.cos(ang(k));return `<text x="${(Cx+c*(R+16)).toFixed(1)}" y="${(Cy+Math.sin(ang(k))*(R+16)+4).toFixed(1)}" text-anchor="${c>.3?"start":c<-.3?"end":"middle"}">${l}</text>`}).join("")}</svg>`}
 function draw(){
-add.innerHTML=`<option value="">+ Add a tool…</option>`+cats.map(c=>`<optgroup label="${esc(c)}">${T.map((t,i)=>[t,i]).filter(([t,i])=>t[1]==c&&!sel.includes(i)).map(([t,i])=>`<option value="${i}">${esc(t[0])}</option>`).join("")}</optgroup>`).join("");add.disabled=sel.length>=5;
-if(sel.length<2){out.innerHTML='<div class="empty">Add at least 2 tools to start a comparison.</div>';return}
-const ts=sel.map(i=>T[i]),n=ts.length,best=f=>Math.max(...ts.map(f)),win=(f,t)=>f(t)==best(f);
+if(sel.length<2){out.innerHTML=`<div class="empty">Add at least 2 tools to start a comparison.</div><div class="ar-addbox">${selHtml()}</div>`;return}
+const ts=sel.map(i=>T[i]),n=ts.length,X=n<5,fill=X?'<div class="ar-fill"></div>':"",best=f=>Math.max(...ts.map(f)),win=(f,t)=>f(t)==best(f);
 const hd=ts.map((t,k)=>`<div class="ar-hd" style="border-top:3px solid ${COL[k]}"><button class="ar-x" data-x="${sel[k]}" aria-label="Remove ${esc(t[0])}">✕</button>${ic(t)}<b>${esc(t[0])}</b><span class="tag mono">${esc(t[1])}</span>${win(avg,t)?'<span class="crown">🏆 Winner</span>':""}<button class="chip" data-d="${sel[k]}">Details</button></div>`).join("");
-const row=(l,f,fm)=>`<div class="ar-l">${l}</div>`+ts.map((t,k)=>`<div class="ar-c${win(f,t)?" w":""}"><em class="tr"><i style="width:0;background:${COL[k]}" data-w="${f(t)*10}"></i></em><b>${fm(f(t))}${win(f,t)?" ★":""}</b></div>`).join("");
-const txt=(l,f)=>`<div class="ar-l">${l}</div>`+ts.map(t=>`<div class="ar-c small">${esc(f(t))}</div>`).join("");
-const w=ts.filter(t=>win(avg,t)).map(t=>esc(t[0])).join(" & ");
-out.innerHTML=`<div class="ar-top2"><div>${radar()}</div><div class="ar-v"><h3>🏆 ${w} ${ts.filter(t=>win(avg,t)).length>1?"tie":"leads"} overall</h3><p style="color:var(--mut);margin:0 0 14px">Average score ${best(avg).toFixed(1)}/10. Category leaders:</p>${RW.map(([l,j])=>`<span class="ar-pill"><b>${l}</b>${ts.filter(t=>win(x=>x[j],t)).map(t=>esc(t[0])).join(", ")}</span>`).join("")}</div></div>
-<div class="ar-t" style="--n:${n}"><div></div>${hd}${RW.map(([l,j])=>row(l,t=>t[j],v=>v)).join("")}${row("Overall",avg,v=>v.toFixed(1))}${txt("Pricing",t=>typeof price=="function"?price(t[0]):"See website")}${txt("About",t=>t[2])}<div class="ar-l"></div>${ts.map(t=>`<div class="ar-c"><a class="btn" href="${t[3]}" target="_blank" rel="noopener" style="text-align:center">Visit →</a></div>`).join("")}</div>`;
+const row=(l,f,fm)=>`<div class="ar-l">${l}</div>`+ts.map((t,k)=>`<div class="ar-c${win(f,t)?" w":""}"><em class="tr"><i style="width:0;background:${COL[k]}" data-w="${f(t)*10}"></i></em><b>${fm(f(t))}${win(f,t)?" ★":""}</b></div>`).join("")+fill;
+const txt=(l,f)=>`<div class="ar-l">${l}</div>`+ts.map(t=>`<div class="ar-c small">${esc(f(t))}</div>`).join("")+fill;
+const wn=ts.filter(t=>win(avg,t)).map(t=>esc(t[0])).join(" & ");
+out.innerHTML=`<div class="ar-top2"><div>${radar()}</div><div class="ar-v"><h3>🏆 ${wn} ${ts.filter(t=>win(avg,t)).length>1?"tie":"leads"} overall</h3><p style="color:var(--mut);margin:0 0 14px">Average score ${best(avg).toFixed(1)}/10. Category leaders:</p>${RW.map(([l,f])=>`<span class="ar-pill"><b>${l}</b>${ts.filter(t=>win(f,t)).map(t=>esc(t[0])).join(", ")}</span>`).join("")}</div></div>
+<div class="ar-t" style="grid-template-columns:130px repeat(${n},minmax(150px,1fr))${X?" 180px":""}"><div></div>${hd}${X?`<div class="ar-add"><span>Add another tool (${n}/5)</span>${selHtml()}</div>`:""}${RW.map(([l,f])=>row(l,f,v=>v)).join("")}${row("Overall",avg,v=>v.toFixed(1))}${txt("Pricing",t=>typeof price=="function"?price(t[0]):"See website")}${txt("About",t=>t[2])}<div class="ar-l"></div>${ts.map(t=>`<div class="ar-c"><a class="btn" href="${t[3]}" target="_blank" rel="noopener" style="text-align:center">Visit →</a></div>`).join("")}${fill}</div>`;
 requestAnimationFrame(()=>requestAnimationFrame(()=>out.querySelectorAll("i[data-w]").forEach(i=>i.style.width=i.dataset.w+"%")))}
 V.onclick=e=>{const x=e.target.closest("[data-x]"),d=e.target.closest("[data-d]"),m=e.target.closest("[data-m]");
 if(x){sel=sel.filter(i=>i!=+x.dataset.x);draw()}
 else if(d)show(+d.dataset.d);
 else if(m){sel=MU[+m.dataset.m].map(ix).filter(i=>i>=0);draw()}
 else if(e.target.closest("#ar-rand")){const c=cats.filter(c=>T.filter(t=>t[1]==c).length>=2),k=c[Math.random()*c.length|0],p=T.map((t,i)=>i).filter(i=>T[i][1]==k).sort(()=>Math.random()-.5);sel=p.slice(0,Math.min(p.length,2+(Math.random()*2|0)));draw()}};
-add.onchange=()=>{if(add.value!==""&&sel.length<5)sel.push(+add.value);draw()};
+V.onchange=e=>{if(e.target.id=="ar-add"&&e.target.value!==""&&sel.length<5){sel.push(+e.target.value);draw()}};
 const nl=document.createElement("a");nl.className="l";nl.dataset.r="arena";nl.href="#/arena";nl.textContent="Arena";document.querySelector('nav a[data-r="briefing"]').before(nl);
 function art(){const h=location.hash;if(h=="#/join")return;const on=h=="#/arena";V.hidden=!on;if(on){["home","rankings","briefing","categories"].forEach(x=>{const e=document.getElementById("v-"+x);if(e)e.hidden=true});document.querySelectorAll("nav a[data-r]").forEach(l=>l.classList.toggle("on",l==nl));draw()}}
 addEventListener("hashchange",art);draw();art();
