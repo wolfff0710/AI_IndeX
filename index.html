@@ -72,6 +72,22 @@ footer{padding:24px 0;color:var(--mut);font-size:13px}
 .why{color:var(--acc)!important;font-size:13px!important;flex:none!important}
 .vb{padding:6px 0 14px;font-size:14px;color:var(--mut);display:flex;gap:10px;align-items:center;flex-wrap:wrap}.vb[hidden]{display:none}
 @media(max-width:720px){.pc{grid-template-columns:1fr}.hero{grid-template-columns:1fr;padding-top:40px}nav a.l{margin-left:0;margin-right:14px}.rk{grid-template-columns:30px 44px 1fr 70px}.rk .mini,.rk a.v{display:none}}
+nav{position:sticky;top:0;z-index:20;background:rgba(5,5,6,.72);backdrop-filter:blur(12px)}
+body::before{content:"";position:fixed;inset:-20%;z-index:-1;pointer-events:none;filter:blur(40px);background:radial-gradient(circle at 20% 30%,rgba(34,211,238,.18),transparent 40%),radial-gradient(circle at 80% 70%,rgba(34,211,238,.12),transparent 45%);animation:aur 16s ease-in-out infinite alternate}
+@keyframes aur{to{transform:translate(6%,4%) scale(1.15)}}
+h1 em{display:inline-block;transition:opacity .3s}
+@keyframes up{from{opacity:0;transform:translateY(14px)}}
+.card{position:relative;animation:up .45s backwards}
+.card:nth-child(4n+2){animation-delay:.05s}.card:nth-child(4n+3){animation-delay:.1s}.card:nth-child(4n){animation-delay:.15s}
+.card::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .2s;background:radial-gradient(300px circle at var(--mx,50%) var(--my,50%),rgba(34,211,238,.16),transparent 60%)}
+.card:hover::before{opacity:1}
+.mq{overflow:hidden;border-block:1px solid var(--line);margin-bottom:8px;mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}
+.mq div{display:flex;gap:36px;width:max-content;padding:12px 0;animation:mq 45s linear infinite;font:500 13px 'IBM Plex Mono',monospace;color:var(--mut);text-transform:uppercase;letter-spacing:.8px}
+.mq:hover div{animation-play-state:paused}.mq span::before{content:"✦ ";color:var(--acc)}
+@keyframes mq{to{transform:translateX(-50%)}}
+.pbar{position:fixed;top:0;left:0;height:3px;width:0;background:var(--acc);box-shadow:0 0 12px var(--acc);z-index:60}
+.sur{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:30;border-radius:999px;box-shadow:0 8px 30px rgba(34,211,238,.35)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
@@ -376,6 +392,18 @@ document.querySelectorAll("nav a[data-r]").forEach(a=>a.classList.toggle("on",a.
 window.scrollTo(0,0)}
 addEventListener("hashchange",route);route();
 $("go").onclick=()=>{const v=$("em").value.trim(),m=$("msg");m.textContent=/^\S+@\S+\.\S+$/.test(v)?"Thanks! (Demo only: connect Supabase to save emails.)":"Enter a valid email."};
+(()=>{
+const rm=matchMedia("(prefers-reduced-motion:reduce)").matches;
+const em=document.querySelector("h1 em");
+if(em&&!rm){const w=["AI tool","writing tool","coding tool","study tool","design tool","video tool"];let i=0;setInterval(()=>{em.style.opacity=0;setTimeout(()=>{i=(i+1)%w.length;em.textContent=w[i];em.style.opacity=1},300)},2600)}
+document.querySelectorAll(".stats b").forEach(b=>{const n=+b.textContent;if(!n||rm)return;let s=null;const f=t=>{s??=t;const p=Math.min((t-s)/900,1);b.textContent=Math.round(n*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(f)};requestAnimationFrame(f)});
+const mq=document.createElement("div");mq.className="mq";const nm=T.map(t=>`<span>${esc(t[0])}</span>`).join("");mq.innerHTML=`<div>${nm}${nm}</div>`;document.querySelector(".hero").after(mq);
+$("g").addEventListener("pointermove",e=>{const c=e.target.closest(".card");if(!c)return;const r=c.getBoundingClientRect();c.style.setProperty("--mx",e.clientX-r.left+"px");c.style.setProperty("--my",e.clientY-r.top+"px")});
+addEventListener("keydown",e=>{if(e.key=="/"&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)){e.preventDefault();$("q").focus()}});
+const sb=document.createElement("button");sb.className="btn sur";sb.textContent="🎲 Surprise me";sb.onclick=()=>show(Math.floor(Math.random()*T.length));document.body.append(sb);
+const pb=document.createElement("div");pb.className="pbar";document.body.prepend(pb);
+addEventListener("scroll",()=>{pb.style.width=scrollY/((document.documentElement.scrollHeight-innerHeight)||1)*100+"%"},{passive:true});
+})();
 </script>
 </body>
 </html>
