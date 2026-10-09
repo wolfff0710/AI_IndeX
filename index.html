@@ -6,6 +6,24 @@
 <title>AIndex — The AI Tools Directory</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
+#v-arena{animation:vin .45s cubic-bezier(.2,.8,.2,1)}
+.ar-top{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}.ar-top .sel{min-width:220px}
+.ar-top2{display:grid;grid-template-columns:340px 1fr;gap:24px;align-items:center;margin-bottom:22px}
+.ar-rd{width:100%;max-width:340px}.ar-rd text{fill:var(--mut);font:11px 'IBM Plex Mono',monospace}
+.ar-p{transform-origin:170px 150px;animation:grow .8s cubic-bezier(.16,1,.3,1)}
+@keyframes grow{from{transform:scale(.1);opacity:0}}
+.ar-v h3{margin:0 0 8px;font-size:26px;letter-spacing:-.5px}
+.ar-pill{display:inline-block;border:1px solid var(--line);background:rgba(12,13,14,.6);border-radius:999px;padding:5px 12px;margin:0 6px 8px 0;font-size:13px;color:var(--mut)}.ar-pill b{color:var(--acc);margin-right:8px}
+.ar-t{display:grid;grid-template-columns:130px repeat(var(--n),minmax(150px,1fr));overflow-x:auto;border:1px solid var(--line);background:rgba(12,13,14,.82);border-radius:6px}
+.ar-t>*{padding:14px;border-bottom:1px solid var(--line)}
+.ar-hd{position:relative;display:flex;flex-direction:column;gap:8px;align-items:flex-start}.ar-hd b{font-size:17px}
+.ar-x{position:absolute;top:6px;right:8px;background:none;border:0;color:var(--mut);cursor:pointer;font-size:16px}.ar-x:hover{color:var(--fg)}
+.crown{font-size:12px;color:#facc15;font-weight:700}
+.ar-l{color:var(--mut);font-size:13px;display:flex;align-items:center}
+.ar-c{display:flex;flex-direction:column;gap:6px;justify-content:center}
+.ar-c b{font:500 14px 'IBM Plex Mono',monospace}.ar-c.w b{color:var(--acc)}.ar-c .tr{margin:0}
+.ar-c.small{font-size:13px;color:var(--mut)}
+@media(max-width:720px){.ar-top2{grid-template-columns:1fr}}
 .card,.cats button{transform:perspective(800px);transition:transform .7s cubic-bezier(.16,1,.3,1),border-color .5s,box-shadow .6s,background .5s}
 .rk{transition:transform .7s cubic-bezier(.16,1,.3,1),border-color .5s,box-shadow .6s}
 .card::before,.rk::before,.cats button::before,.sp>div::before{transition:opacity .6s}
@@ -512,6 +530,43 @@ v.onclick=e=>{const b=e.target.closest("button");if(!b)return;location.hash="#/"
 const a=document.createElement("a");a.className="l";a.dataset.r="categories";a.href="#/categories";a.textContent="Categories";document.querySelector('nav a[data-r="briefing"]').before(a);
 function rt(){const h=location.hash;if(h=="#/join")return;const on=h=="#/categories";v.hidden=!on;if(on){["home","rankings","briefing"].forEach(x=>{const e=document.getElementById("v-"+x);if(e)e.hidden=true});document.querySelectorAll("nav a[data-r]").forEach(l=>l.classList.toggle("on",l==a))}}
 addEventListener("hashchange",rt);rt();
+})();
+(()=>{
+const COL=["#22d3ee","#fbbf24","#f472b6","#4ade80","#a78bfa"],RW=[["Quality",4],["Ease of use",5],["Value",6],["Features",7]];
+const avg=t=>(t[4]+t[5]+t[6]+t[7])/4,ix=n=>T.findIndex(t=>t[0]==n);
+const MU=[["ChatGPT","Claude","Gemini"],["Cursor","GitHub Copilot","Windsurf"],["Midjourney","Leonardo.ai","Ideogram"],["Lovable","Bolt","v0"],["Perplexity","Elicit","Consensus"],["Canva","Figma"]];
+const cats=[...new Set(T.map(t=>t[1]))];
+let sel=MU[0].map(ix).filter(i=>i>=0);
+const V=document.createElement("div");V.id="v-arena";V.hidden=true;
+V.innerHTML=`<div class="pg"><h2>The <em style="font-style:normal;color:var(--acc)">Arena</em></h2><p>Pick 2 to 5 tools and see how they stack up head to head.</p></div>
+<div class="ar-top"><select class="sel" id="ar-add" aria-label="Add a tool"></select><button class="chip" id="ar-rand">🎲 Random matchup</button></div>
+<div class="chips" id="ar-mu" style="margin-bottom:20px"><span class="mini mono" style="align-self:center">Popular matchups:</span>${MU.map((m,k)=>`<button class="chip" data-m="${k}">${esc(m.join(" vs "))}</button>`).join("")}</div>
+<div id="ar-out"></div><div style="height:56px"></div>`;
+document.getElementById("v-briefing").after(V);
+const out=V.querySelector("#ar-out"),add=V.querySelector("#ar-add");
+function radar(){const Cx=170,Cy=150,R=95,P=(k,r)=>{const a=[-90,0,90,180][k]*Math.PI/180;return[Cx+Math.cos(a)*r,Cy+Math.sin(a)*r].map(n=>n.toFixed(1))};
+const ring=f=>`<polygon points="${[0,1,2,3].map(k=>P(k,R*f).join(",")).join(" ")}" fill="none" stroke="var(--line)"/>`;
+return `<svg viewBox="0 0 340 300" class="ar-rd" role="img" aria-label="Radar chart comparing the selected tools">${[.25,.5,.75,1].map(ring).join("")}${[0,1,2,3].map(k=>{const p=P(k,R);return `<line x1="${Cx}" y1="${Cy}" x2="${p[0]}" y2="${p[1]}" stroke="var(--line)"/>`}).join("")}${sel.map((i,n)=>`<polygon class="ar-p" points="${RW.map(([,j],k)=>P(k,R*T[i][j]/10).join(",")).join(" ")}" fill="${COL[n]}" fill-opacity=".16" stroke="${COL[n]}" stroke-width="2" stroke-linejoin="round"/>`).join("")}<text x="170" y="36" text-anchor="middle">Quality</text><text x="276" y="154">Ease</text><text x="170" y="274" text-anchor="middle">Value</text><text x="8" y="154">Features</text></svg>`}
+function draw(){
+add.innerHTML=`<option value="">+ Add a tool…</option>`+cats.map(c=>`<optgroup label="${esc(c)}">${T.map((t,i)=>[t,i]).filter(([t,i])=>t[1]==c&&!sel.includes(i)).map(([t,i])=>`<option value="${i}">${esc(t[0])}</option>`).join("")}</optgroup>`).join("");add.disabled=sel.length>=5;
+if(sel.length<2){out.innerHTML='<div class="empty">Add at least 2 tools to start a comparison.</div>';return}
+const ts=sel.map(i=>T[i]),n=ts.length,best=f=>Math.max(...ts.map(f)),win=(f,t)=>f(t)==best(f);
+const hd=ts.map((t,k)=>`<div class="ar-hd" style="border-top:3px solid ${COL[k]}"><button class="ar-x" data-x="${sel[k]}" aria-label="Remove ${esc(t[0])}">✕</button>${ic(t)}<b>${esc(t[0])}</b><span class="tag mono">${esc(t[1])}</span>${win(avg,t)?'<span class="crown">🏆 Winner</span>':""}<button class="chip" data-d="${sel[k]}">Details</button></div>`).join("");
+const row=(l,f,fm)=>`<div class="ar-l">${l}</div>`+ts.map((t,k)=>`<div class="ar-c${win(f,t)?" w":""}"><em class="tr"><i style="width:0;background:${COL[k]}" data-w="${f(t)*10}"></i></em><b>${fm(f(t))}${win(f,t)?" ★":""}</b></div>`).join("");
+const txt=(l,f)=>`<div class="ar-l">${l}</div>`+ts.map(t=>`<div class="ar-c small">${esc(f(t))}</div>`).join("");
+const w=ts.filter(t=>win(avg,t)).map(t=>esc(t[0])).join(" & ");
+out.innerHTML=`<div class="ar-top2"><div>${radar()}</div><div class="ar-v"><h3>🏆 ${w} ${ts.filter(t=>win(avg,t)).length>1?"tie":"leads"} overall</h3><p style="color:var(--mut);margin:0 0 14px">Average score ${best(avg).toFixed(1)}/10. Category leaders:</p>${RW.map(([l,j])=>`<span class="ar-pill"><b>${l}</b>${ts.filter(t=>win(x=>x[j],t)).map(t=>esc(t[0])).join(", ")}</span>`).join("")}</div></div>
+<div class="ar-t" style="--n:${n}"><div></div>${hd}${RW.map(([l,j])=>row(l,t=>t[j],v=>v)).join("")}${row("Overall",avg,v=>v.toFixed(1))}${txt("Pricing",t=>typeof price=="function"?price(t[0]):"See website")}${txt("About",t=>t[2])}<div class="ar-l"></div>${ts.map(t=>`<div class="ar-c"><a class="btn" href="${t[3]}" target="_blank" rel="noopener" style="text-align:center">Visit →</a></div>`).join("")}</div>`;
+requestAnimationFrame(()=>requestAnimationFrame(()=>out.querySelectorAll("i[data-w]").forEach(i=>i.style.width=i.dataset.w+"%")))}
+V.onclick=e=>{const x=e.target.closest("[data-x]"),d=e.target.closest("[data-d]"),m=e.target.closest("[data-m]");
+if(x){sel=sel.filter(i=>i!=+x.dataset.x);draw()}
+else if(d)show(+d.dataset.d);
+else if(m){sel=MU[+m.dataset.m].map(ix).filter(i=>i>=0);draw()}
+else if(e.target.closest("#ar-rand")){const c=cats.filter(c=>T.filter(t=>t[1]==c).length>=2),k=c[Math.random()*c.length|0],p=T.map((t,i)=>i).filter(i=>T[i][1]==k).sort(()=>Math.random()-.5);sel=p.slice(0,Math.min(p.length,2+(Math.random()*2|0)));draw()}};
+add.onchange=()=>{if(add.value!==""&&sel.length<5)sel.push(+add.value);draw()};
+const nl=document.createElement("a");nl.className="l";nl.dataset.r="arena";nl.href="#/arena";nl.textContent="Arena";document.querySelector('nav a[data-r="briefing"]').before(nl);
+function art(){const h=location.hash;if(h=="#/join")return;const on=h=="#/arena";V.hidden=!on;if(on){["home","rankings","briefing","categories"].forEach(x=>{const e=document.getElementById("v-"+x);if(e)e.hidden=true});document.querySelectorAll("nav a[data-r]").forEach(l=>l.classList.toggle("on",l==nl));draw()}}
+addEventListener("hashchange",art);draw();art();
 })();
 </script>
 </body>
