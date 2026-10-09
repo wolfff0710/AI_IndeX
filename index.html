@@ -176,6 +176,7 @@ nav::before{content:"";position:absolute;inset:0 -100vmax;z-index:-1;background:
 .cats b{display:block;font:500 26px/1 'IBM Plex Mono',monospace;color:var(--acc)}
 .cats span{display:block;font-size:14px;font-weight:700;margin-top:8px}
 .cats small{display:block;color:var(--mut);font-size:12px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
 (()=>{const sb=document.querySelector(".sur");if(!sb)return;
 const f=()=>{if(location.hash=="#/join")return;sb.style.display=$("v-home").hidden?"none":""};
 addEventListener("hashchange",()=>setTimeout(f,0));setTimeout(f,0);
