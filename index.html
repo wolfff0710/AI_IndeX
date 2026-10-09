@@ -6,6 +6,22 @@
 <title>AIndex — The AI Tools Directory</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
+.card,.cats button{transform:perspective(800px);transition:transform .7s cubic-bezier(.16,1,.3,1),border-color .5s,box-shadow .6s,background .5s}
+.rk{transition:transform .7s cubic-bezier(.16,1,.3,1),border-color .5s,box-shadow .6s}
+.card::before,.rk::before,.cats button::before,.sp>div::before{transition:opacity .6s}
+.ico{transition:transform .5s cubic-bezier(.16,1,.3,1)}
+@media(hover:hover){
+.card:hover,.cats button:hover{z-index:5;transform:perspective(800px) translateY(-10px) scale(1.035) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));border-color:var(--acc);box-shadow:0 28px 50px -12px rgba(0,0,0,.75),0 0 0 1px var(--acc),0 0 44px rgba(34,211,238,.22);transition:transform .18s ease-out,border-color .25s,box-shadow .3s,background .25s}
+.rk:hover{z-index:5;transform:translateX(8px) scale(1.012);box-shadow:0 18px 40px -10px rgba(0,0,0,.7),0 0 0 1px var(--acc),0 0 36px rgba(34,211,238,.18);transition:transform .25s ease-out,border-color .25s,box-shadow .3s}
+.card:hover::before,.rk:hover::before,.cats button:hover::before,.sp>div:hover::before{opacity:1;transition:opacity .25s}
+.card:hover .ico{transform:scale(1.1) rotate(-4deg)}
+}
+.card:active,.cats button:active{transform:perspective(800px) scale(.97)}
+.lb{grid-template-columns:28px 1fr 80px 34px}
+.lb .nm{font-weight:700}.lb small{display:block;color:var(--mut);font:11px 'IBM Plex Mono',monospace;font-weight:400}
+.lb .n{font-size:17px}
+.lb.t1 .tr i{background:linear-gradient(90deg,var(--acc),#a5f3fc);box-shadow:0 0 10px var(--acc)}
+.sp .chip{padding:5px 10px;font-size:12px}
 body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(rgba(34,211,238,.04) 1px,transparent 1px) 0 calc(var(--sc,0)*-140px)/44px 44px,linear-gradient(90deg,rgba(34,211,238,.04) 1px,transparent 1px) 0 0/44px 44px;-webkit-mask-image:radial-gradient(600px circle at var(--bx,50%) var(--by,25%),#000,rgba(0,0,0,.35) 70%);mask-image:radial-gradient(600px circle at var(--bx,50%) var(--by,25%),#000,rgba(0,0,0,.35) 70%)}
 html{-webkit-tap-highlight-color:transparent}
 button,a,.card,.rk,.lb{touch-action:manipulation}
@@ -455,32 +471,6 @@ const pb=document.createElement("div");pb.className="pbar";document.body.prepend
 addEventListener("scroll",()=>{pb.style.width=scrollY/((document.documentElement.scrollHeight-innerHeight)||1)*100+"%"},{passive:true});
 })();
 (()=>{
-if(!matchMedia("(prefers-reduced-motion:reduce)").matches){
-let tx=innerWidth/2,ty=innerHeight/4,x=tx,y=ty,sc=0;const R=document.documentElement.style;
-addEventListener("pointermove",e=>{tx=e.clientX;ty=e.clientY},{passive:true});
-addEventListener("scroll",()=>{sc=scrollY/((document.documentElement.scrollHeight-innerHeight)||1)},{passive:true});
-(function f(){x+=(tx-x)*.08;y+=(ty-y)*.08;R.setProperty("--bx",x+"px");R.setProperty("--by",y+"px");R.setProperty("--sc",sc.toFixed(3));requestAnimationFrame(f)})();
-}
-const avg=t=>(t[4]+t[5]+t[6]+t[7])/4;
-const CR=[["Quality",4],["Ease",5],["Value",6],["Features",7]];
-let di=(Math.floor(Date.now()/864e5)*7919)%T.length,crit=4;
-const sp=document.createElement("div");sp.className="sp";
-function paint(){const t=T[di];
-sp.innerHTML=`<div><h4>Tool of the day</h4><div class="tt" data-o="${di}">${ic(t)}<div><h3>${esc(t[0])} <span class="tag mono">${esc(t[1])}</span></h3><p>${esc(t[2])}</p></div></div><div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap"><button class="chip" data-o="${di}">Open details</button><button class="chip" data-r1="1">🔀 Another</button></div></div>
-<div><h4>Top 5 right now</h4><div class="chips" style="margin-bottom:8px">${CR.map(([l,k])=>`<button class="chip${k==crit?" on":""}" data-k="${k}">${l}</button>`).join("")}</div>${T.map((t,i)=>[t,i]).sort((a,b)=>b[0][crit]-a[0][crit]||avg(b[0])-avg(a[0])).slice(0,5).map(([t,i],n)=>`<div class="lb" data-o="${i}"><span class="n">0${n+1}</span><span>${esc(t[0])}</span><em class="tr"><i style="width:0" data-w="${t[crit]*10}"></i></em><b>${t[crit]}</b></div>`).join("")}</div>`;
-requestAnimationFrame(()=>requestAnimationFrame(()=>sp.querySelectorAll("i[data-w]").forEach(i=>i.style.width=i.dataset.w+"%")))}
-sp.onclick=e=>{const k=e.target.closest("[data-k]");if(k){crit=+k.dataset.k;paint();return}if(e.target.closest("[data-r1]")){di=Math.floor(Math.random()*T.length);paint();return}const o=e.target.closest("[data-o]");if(o)show(+o.dataset.o)};
-paint();document.querySelector(".hero").after(sp);
-const m={};T.forEach(t=>(m[t[1]]??=[]).push(t));
-const v=document.createElement("div");v.id="v-categories";v.hidden=true;
-v.innerHTML=`<div class="pg"><h2>Browse by <em style="font-style:normal;color:var(--acc)">category</em></h2><p>Pick a category to see its tools. The bar shows the average editorial score.</p></div><div class="cats big">`+Object.entries(m).map(([k,a])=>{const s=a.reduce((x,t)=>x+avg(t),0)/a.length,top=[...a].sort((x,y)=>avg(y)-avg(x)).slice(0,3).map(t=>t[0]).join(", ");return `<button data-c="${esc(k)}"><b>${a.length}</b><span>${esc(k)}</span><small>${esc(top)}</small><em class="tr"><i style="width:${s*10}%"></i></em></button>`}).join("")+`</div><div style="height:48px"></div>`;
-document.getElementById("v-briefing").after(v);
-v.onclick=e=>{const b=e.target.closest("button");if(!b)return;location.hash="#/";setTimeout(()=>{const ch=[...$("chips").children].find(x=>x.textContent==b.dataset.c);if(ch)ch.click();$("g").scrollIntoView({behavior:"smooth",block:"start"})},80)};
-const a=document.createElement("a");a.className="l";a.dataset.r="categories";a.href="#/categories";a.textContent="Categories";document.querySelector('nav a[data-r="briefing"]').before(a);
-function rt(){const h=location.hash;if(h=="#/join")return;const on=h=="#/categories";v.hidden=!on;if(on){["home","rankings","briefing"].forEach(x=>{const e=document.getElementById("v-"+x);if(e)e.hidden=true});document.querySelectorAll("nav a[data-r]").forEach(l=>l.classList.toggle("on",l==a))}}
-addEventListener("hashchange",rt);rt();
-})();
-(()=>{
 const rm=matchMedia("(prefers-reduced-motion:reduce)").matches;
 const gl=e=>{const c=e.target.closest&&e.target.closest(".card,.rk,.cats button,.sp>div");if(!c)return;const r=c.getBoundingClientRect();c.style.setProperty("--mx",e.clientX-r.left+"px");c.style.setProperty("--my",e.clientY-r.top+"px")};
 document.addEventListener("pointermove",gl,{passive:true});document.addEventListener("pointerdown",gl,{passive:true});
@@ -492,6 +482,36 @@ if(i in ps){const dy=ps[i]-r.getBoundingClientRect().top;if(dy)r.animate([{trans
 if(b&&i in ws){const t=b.style.width;b.style.width=ws[i];b.getBoundingClientRect();b.style.width=t}})}}
 const enter=()=>{if(location.hash!="#/rankings")return;$("rk").querySelectorAll(".rk").forEach((e,i)=>{e.style.animation="none";e.offsetHeight;e.style.animation=`up .5s ${Math.min(i,14)*35}ms backwards`})};
 addEventListener("hashchange",enter);enter();
+})();
+(()=>{
+if(!matchMedia("(prefers-reduced-motion:reduce)").matches){
+let tx=innerWidth/2,ty=innerHeight/4,x=tx,y=ty,sc=0;const R=document.documentElement.style;
+addEventListener("pointermove",e=>{tx=e.clientX;ty=e.clientY},{passive:true});
+addEventListener("scroll",()=>{sc=scrollY/((document.documentElement.scrollHeight-innerHeight)||1)},{passive:true});
+(function f(){x+=(tx-x)*.08;y+=(ty-y)*.08;R.setProperty("--bx",x+"px");R.setProperty("--by",y+"px");R.setProperty("--sc",sc.toFixed(3));requestAnimationFrame(f)})();
+}
+const tl=e=>{if(e.pointerType!="mouse")return;const c=e.target.closest&&e.target.closest(".card,.cats button");if(!c)return;const r=c.getBoundingClientRect();c.style.setProperty("--ry",((e.clientX-r.left)/r.width-.5)*12+"deg");c.style.setProperty("--rx",-((e.clientY-r.top)/r.height-.5)*12+"deg")};
+document.addEventListener("pointermove",tl,{passive:true});
+document.addEventListener("pointerout",e=>{const c=e.target.closest&&e.target.closest(".card,.cats button");if(c&&!c.contains(e.relatedTarget)){c.style.setProperty("--rx","0deg");c.style.setProperty("--ry","0deg")}});
+const avg=t=>(t[4]+t[5]+t[6]+t[7])/4;
+const TABS=[["🏆 Overall",()=>1,avg],["🎓 Students",t=>["Study","Research","Teaching"].includes(t[1]),avg],["💻 Coders",t=>["Coding","Code","App Builders"].includes(t[1]),avg],["🎨 Creators",t=>["Image","Video","Audio","Design"].includes(t[1]),avg],["✍️ Writers",t=>["Writing","Write","Chatbots"].includes(t[1]),avg],["💸 Best value",()=>1,t=>t[6]],["⚡ Easiest",()=>1,t=>t[5]],["🎯 Top quality",()=>1,t=>t[4]],["🆓 Free to start",t=>typeof price!="function"||price(t[0])[0]=="F",avg]];
+let di=(Math.floor(Date.now()/864e5)*7919)%T.length,crit=0;
+const sp=document.createElement("div");sp.className="sp";
+function paint(){const t=T[di],f=TABS[crit][1],val=TABS[crit][2];
+const top=T.map((t,i)=>[t,i]).filter(([t])=>f(t)).sort((a,b)=>val(b[0])-val(a[0])||avg(b[0])-avg(a[0])).slice(0,5);
+sp.innerHTML=`<div><h4>Tool of the day</h4><div class="tt" data-o="${di}">${ic(t)}<div><h3>${esc(t[0])} <span class="tag mono">${esc(t[1])}</span></h3><p>${esc(t[2])}</p></div></div><div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap"><button class="chip" data-o="${di}">Open details</button><button class="chip" data-r1="1">🔀 Another</button></div></div>
+<div><h4>Top 5 right now</h4><div class="chips" style="margin-bottom:8px">${TABS.map(([l],k)=>`<button class="chip${k==crit?" on":""}" data-k="${k}">${l}</button>`).join("")}</div>${top.length?top.map(([t,i],n)=>`<div class="lb${n?"":" t1"}" data-o="${i}"><span class="n">${["🥇","🥈","🥉","4","5"][n]}</span><span class="nm">${esc(t[0])}<small>${esc(t[1])}</small></span><em class="tr"><i style="width:0" data-w="${val(t)*10}"></i></em><b>${val(t).toFixed(1)}</b></div>`).join(""):"<p>No tools here yet.</p>"}</div>`;
+requestAnimationFrame(()=>requestAnimationFrame(()=>sp.querySelectorAll("i[data-w]").forEach(i=>i.style.width=i.dataset.w+"%")))}
+sp.onclick=e=>{const k=e.target.closest("[data-k]");if(k){crit=+k.dataset.k;paint();return}if(e.target.closest("[data-r1]")){di=Math.floor(Math.random()*T.length);paint();return}const o=e.target.closest("[data-o]");if(o)show(+o.dataset.o)};
+paint();document.querySelector(".hero").after(sp);
+const m={};T.forEach(t=>(m[t[1]]??=[]).push(t));
+const v=document.createElement("div");v.id="v-categories";v.hidden=true;
+v.innerHTML=`<div class="pg"><h2>Browse by <em style="font-style:normal;color:var(--acc)">category</em></h2><p>Pick a category to see its tools. The bar shows the average editorial score.</p></div><div class="cats big">`+Object.entries(m).map(([k,a])=>{const s=a.reduce((x,t)=>x+avg(t),0)/a.length,tp=[...a].sort((x,y)=>avg(y)-avg(x)).slice(0,3).map(t=>t[0]).join(", ");return `<button data-c="${esc(k)}"><b>${a.length}</b><span>${esc(k)}</span><small>${esc(tp)}</small><em class="tr"><i style="width:${s*10}%"></i></em></button>`}).join("")+`</div><div style="height:48px"></div>`;
+document.getElementById("v-briefing").after(v);
+v.onclick=e=>{const b=e.target.closest("button");if(!b)return;location.hash="#/";setTimeout(()=>{const ch=[...$("chips").children].find(x=>x.textContent==b.dataset.c);if(ch)ch.click();$("g").scrollIntoView({behavior:"smooth",block:"start"})},80)};
+const a=document.createElement("a");a.className="l";a.dataset.r="categories";a.href="#/categories";a.textContent="Categories";document.querySelector('nav a[data-r="briefing"]').before(a);
+function rt(){const h=location.hash;if(h=="#/join")return;const on=h=="#/categories";v.hidden=!on;if(on){["home","rankings","briefing"].forEach(x=>{const e=document.getElementById("v-"+x);if(e)e.hidden=true});document.querySelectorAll("nav a[data-r]").forEach(l=>l.classList.toggle("on",l==a))}}
+addEventListener("hashchange",rt);rt();
 })();
 </script>
 </body>
