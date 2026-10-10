@@ -309,6 +309,8 @@ const T=[
 ["AdCreative.ai","Marketing","Generates ad banners and copy designed to convert.","https://www.adcreative.ai",7,9,6,7],
 ["Beautiful.ai","Productivity","AI presentation maker with smart slide layouts.","https://www.beautiful.ai",7,9,7,7]
 ];
+(()=>{const ADJ={"Gemini":[8,9,8,8.5],"Windsurf":[8,8,7.5,8],"Consensus":[8,8,7,6.5],"Lovable":[8,9,7.5,7.5],"Bolt":[8,8.5,7,7.5],"v0":[8.5,9,7,6]};
+T.forEach(t=>{const a=ADJ[t[0]];if(a)for(let k=0;k<4;k++)t[4+k]=a[k];for(let k=4;k<8;k++)t[k]=Math.min(t[k],9.5)})})();
 const C=["All",...new Set(T.map(t=>t[1]))];
 const $=id=>document.getElementById(id);
 const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -542,7 +544,7 @@ addEventListener("hashchange",rt);rt();
 })();
 (()=>{
 const COL=["#22d3ee","#fbbf24","#f472b6","#4ade80","#a78bfa"],AXN=["Quality","Ease","Value","Features","Free access"];
-const FA=t=>{const p=typeof price=="function"?price(t[0]):"Freemium";return p=="Free"?10:p=="Paid"?4:7};
+const FA=t=>{const p=typeof price=="function"?price(t[0]):"Freemium",b=p=="Free"?9:p=="Paid"?3.5:6.5;return Math.max(1,Math.min(9.5,+(b+(t[6]-7)*.25).toFixed(1)))};
 const RW=[["Quality",t=>t[4]],["Ease of use",t=>t[5]],["Value for money",t=>t[6]],["Features",t=>t[7]],["Free access",FA]];
 const avg=t=>(t[4]+t[5]+t[6]+t[7])/4,ix=n=>T.findIndex(t=>t[0]==n);
 const MU=[["ChatGPT","Claude","Gemini"],["Cursor","GitHub Copilot","Windsurf"],["Midjourney","Leonardo.ai","Ideogram"],["Lovable","Bolt","v0"],["Perplexity","Elicit","Consensus"],["Canva","Figma"]];
@@ -558,15 +560,23 @@ const selHtml=()=>`<select class="sel" id="ar-add" aria-label="Add a tool"><opti
 function radar(){const Cx=170,Cy=150,R=88,ang=k=>(-90+72*k)*Math.PI/180,P=(k,r)=>[Cx+Math.cos(ang(k))*r,Cy+Math.sin(ang(k))*r].map(n=>n.toFixed(1)).join(",");
 const K=[0,1,2,3,4];
 return `<svg viewBox="0 0 340 262" class="ar-rd" role="img" aria-label="Pentagon chart comparing the selected tools">${[.25,.5,.75,1].map(f=>`<polygon points="${K.map(k=>P(k,R*f)).join(" ")}" fill="none" stroke="var(--line)"/>`).join("")}${K.map(k=>`<line x1="${Cx}" y1="${Cy}" x2="${P(k,R).split(",")[0]}" y2="${P(k,R).split(",")[1]}" stroke="var(--line)"/>`).join("")}${sel.map((i,n)=>`<polygon class="ar-p" points="${K.map(k=>P(k,R*RW[k][1](T[i])/10)).join(" ")}" fill="${COL[n]}" fill-opacity=".16" stroke="${COL[n]}" stroke-width="2" stroke-linejoin="round"/>`).join("")}${AXN.map((l,k)=>{const c=Math.cos(ang(k));return `<text x="${(Cx+c*(R+16)).toFixed(1)}" y="${(Cy+Math.sin(ang(k))*(R+16)+4).toFixed(1)}" text-anchor="${c>.3?"start":c<-.3?"end":"middle"}">${l}</text>`}).join("")}</svg>`}
+function decide(ts){let L=ts.filter(t=>avg(t)==Math.max(...ts.map(avg)));
+if(L.length==1)return{w:L,why:""};
+const wins=t=>RW.filter(([,f])=>f(t)==Math.max(...L.map(f))).length,m=Math.max(...L.map(wins)),L1=L.filter(t=>wins(t)==m);
+if(L1.length==1)return{w:L1,why:`Tiebreaker: more category wins (${m} of 5)`};
+L=L1;
+for(const [n,f] of [["Quality",t=>t[4]],["Features",t=>t[7]],["Value",t=>t[6]],["Ease of use",t=>t[5]],["Free access",FA]]){const b=Math.max(...L.map(f)),L2=L.filter(t=>f(t)==b);if(L2.length==1)return{w:L2,why:`Tiebreaker: higher ${n} (${b})`};L=L2}
+return{w:L,why:"Identical scores on every measure"}}
 function draw(){
 if(sel.length<2){out.innerHTML=`<div class="empty">Add at least 2 tools to start a comparison.</div><div class="ar-addbox">${selHtml()}</div>`;return}
 const ts=sel.map(i=>T[i]),n=ts.length,X=n<5,fill=X?'<div class="ar-fill"></div>':"",best=f=>Math.max(...ts.map(f)),win=(f,t)=>f(t)==best(f);
-const hd=ts.map((t,k)=>`<div class="ar-hd" style="border-top:3px solid ${COL[k]}"><button class="ar-x" data-x="${sel[k]}" aria-label="Remove ${esc(t[0])}">✕</button>${ic(t)}<b>${esc(t[0])}</b><span class="tag mono">${esc(t[1])}</span>${win(avg,t)?'<span class="crown">🏆 Winner</span>':""}<button class="chip" data-d="${sel[k]}">Details</button></div>`).join("");
-const row=(l,f,fm)=>`<div class="ar-l">${l}</div>`+ts.map((t,k)=>`<div class="ar-c${win(f,t)?" w":""}"><em class="tr"><i style="width:0;background:${COL[k]}" data-w="${f(t)*10}"></i></em><b>${fm(f(t))}${win(f,t)?" ★":""}</b></div>`).join("")+fill;
+const D=decide(ts),isW=t=>D.w.includes(t),tie=ts.filter(t=>avg(t)==best(avg)).length>1,f1=v=>Number.isInteger(v)?v:v.toFixed(1);
+const hd=ts.map((t,k)=>`<div class="ar-hd" style="border-top:3px solid ${COL[k]}"><button class="ar-x" data-x="${sel[k]}" aria-label="Remove ${esc(t[0])}">✕</button>${ic(t)}<b>${esc(t[0])}</b><span class="tag mono">${esc(t[1])}</span>${isW(t)?`<span class="crown">${D.w.length>1?"🤝 Dead heat":"🏆 Winner"}</span>`:""}<button class="chip" data-d="${sel[k]}">Details</button></div>`).join("");
+const row=(l,f,fm,p=win)=>`<div class="ar-l">${l}</div>`+ts.map((t,k)=>`<div class="ar-c${p(f,t)?" w":""}"><em class="tr"><i style="width:0;background:${COL[k]}" data-w="${f(t)*10}"></i></em><b>${fm(f(t))}${p(f,t)?" ★":""}</b></div>`).join("")+fill;
 const txt=(l,f)=>`<div class="ar-l">${l}</div>`+ts.map(t=>`<div class="ar-c small">${esc(f(t))}</div>`).join("")+fill;
-const wn=ts.filter(t=>win(avg,t)).map(t=>esc(t[0])).join(" & ");
-out.innerHTML=`<div class="ar-top2"><div>${radar()}</div><div class="ar-v"><h3>🏆 ${wn} ${ts.filter(t=>win(avg,t)).length>1?"tie":"leads"} overall</h3><p style="color:var(--mut);margin:0 0 14px">Average score ${best(avg).toFixed(1)}/10. Category leaders:</p>${RW.map(([l,f])=>`<span class="ar-pill"><b>${l}</b>${ts.filter(t=>win(f,t)).map(t=>esc(t[0])).join(", ")}</span>`).join("")}</div></div>
-<div class="ar-t" style="grid-template-columns:130px repeat(${n},minmax(150px,1fr))${X?" 180px":""}"><div></div>${hd}${X?`<div class="ar-add"><span>Add another tool (${n}/5)</span>${selHtml()}</div>`:""}${RW.map(([l,f])=>row(l,f,v=>v)).join("")}${row("Overall",avg,v=>v.toFixed(1))}${txt("Pricing",t=>typeof price=="function"?price(t[0]):"See website")}${txt("About",t=>t[2])}<div class="ar-l"></div>${ts.map(t=>`<div class="ar-c"><a class="btn" href="${t[3]}" target="_blank" rel="noopener" style="text-align:center">Visit →</a></div>`).join("")}${fill}</div>`;
+const nm=D.w.map(t=>esc(t[0])).join(" & ");
+out.innerHTML=`<div class="ar-top2"><div>${radar()}</div><div class="ar-v"><h3>${D.w.length>1?"🤝 Dead heat: "+nm:"🏆 "+nm+(tie?" wins the tiebreaker":" leads overall")}</h3><p style="color:var(--mut);margin:0 0 14px">${tie?`Tied at ${best(avg).toFixed(2)}/10 overall. ${D.why}.`:`Average score ${best(avg).toFixed(2)}/10.`} Category leaders:</p>${RW.map(([l,f])=>{const L=ts.filter(t=>win(f,t));return `<span class="ar-pill"><b>${l}</b>${L.length==n?"all tied":L.map(t=>esc(t[0])).join(", ")}</span>`}).join("")}</div></div>
+<div class="ar-t" style="grid-template-columns:130px repeat(${n},minmax(150px,1fr))${X?" 180px":""}"><div></div>${hd}${X?`<div class="ar-add"><span>Add another tool (${n}/5)</span>${selHtml()}</div>`:""}${RW.map(([l,f])=>row(l,f,f1)).join("")}${row("Overall",avg,v=>v.toFixed(2),(f,t)=>isW(t))}${txt("Pricing",t=>typeof price=="function"?price(t[0]):"See website")}${txt("About",t=>t[2])}<div class="ar-l"></div>${ts.map(t=>`<div class="ar-c"><a class="btn" href="${t[3]}" target="_blank" rel="noopener" style="text-align:center">Visit →</a></div>`).join("")}${fill}</div>`;
 requestAnimationFrame(()=>requestAnimationFrame(()=>out.querySelectorAll("i[data-w]").forEach(i=>i.style.width=i.dataset.w+"%")))}
 V.onclick=e=>{const x=e.target.closest("[data-x]"),d=e.target.closest("[data-d]"),m=e.target.closest("[data-m]");
 if(x){sel=sel.filter(i=>i!=+x.dataset.x);draw()}
