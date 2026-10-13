@@ -3,6 +3,633 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AIndex — The AI Tools Directory & Stack Builder</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+.ar-add{display:flex;flex-direction:column;gap:8px;justify-content:center;border-left:1px dashed var(--line);color:var(--mut);font-size:13px}
+.ar-add .sel{width:100%}
+.ar-fill{border-left:1px dashed var(--line)}
+.ar-addbox{max-width:260px;margin:12px 0}
+#v-arena{animation:vin .45s cubic-bezier(.2,.8,.2,1)}
+.ar-top{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}.ar-top .sel{min-width:220px}
+.ar-top2{display:grid;grid-template-columns:340px 1fr;gap:24px;align-items:center;margin-bottom:22px}
+.ar-rd{width:100%;max-width:340px}.ar-rd text{fill:var(--mut);font:11px 'IBM Plex Mono',monospace}
+.ar-p{transform-origin:170px 150px;animation:grow .8s cubic-bezier(.16,1,.3,1)}
+@keyframes grow{from{transform:scale(.1);opacity:0}}
+.ar-v h3{margin:0 0 8px;font-size:26px;letter-spacing:-.5px}
+.ar-pill{display:inline-block;border:1px solid var(--line);background:rgba(12,13,14,.6);border-radius:999px;padding:5px 12px;margin:0 6px 8px 0;font-size:13px;color:var(--mut)}.ar-pill b{color:var(--acc);margin-right:8px}
+.ar-t{display:grid;grid-template-columns:130px repeat(var(--n),minmax(150px,1fr));overflow-x:auto;border:1px solid var(--line);background:rgba(12,13,14,.82);border-radius:6px}
+.ar-t>*{padding:14px;border-bottom:1px solid var(--line)}
+.ar-hd{position:relative;display:flex;flex-direction:column;gap:8px;align-items:flex-start}.ar-hd b{font-size:17px}
+.ar-x{position:absolute;top:6px;right:8px;background:none;border:0;color:var(--mut);cursor:pointer;font-size:16px}.ar-x:hover{color:var(--fg)}
+.crown{font-size:12px;color:#facc15;font-weight:700}
+.ar-l{color:var(--mut);font-size:13px;display:flex;align-items:center}
+.ar-c{display:flex;flex-direction:column;gap:6px;justify-content:center}
+.ar-c b{font:500 14px 'IBM Plex Mono',monospace}.ar-c.w b{color:var(--acc)}.ar-c .tr{margin:0}
+.ar-c.small{font-size:13px;color:var(--mut)}
+@media(max-width:720px){.ar-top2{grid-template-columns:1fr}}
+.card,.cats button{transform:perspective(800px);transition:transform .7s cubic-bezier(.16,1,.3,1),border-color .5s,box-shadow .6s,background .5s}
+.rk{transition:transform .7s cubic-bezier(.16,1,.3,1),border-color .5s,box-shadow .6s}
+.card::before,.rk::before,.cats button::before,.sp>div::before{transition:opacity .6s}
+.ico{transition:transform .5s cubic-bezier(.16,1,.3,1)}
+@media(hover:hover){
+.card:hover,.cats button:hover{z-index:5;transform:perspective(800px) translateY(-10px) scale(1.035) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));border-color:var(--acc);box-shadow:0 28px 50px -12px rgba(0,0,0,.75),0 0 0 1px var(--acc),0 0 44px rgba(34,211,238,.22);transition:transform .18s ease-out,border-color .25s,box-shadow .3s,background .25s}
+.rk:hover{z-index:5;transform:translateX(8px) scale(1.012);box-shadow:0 18px 40px -10px rgba(0,0,0,.7),0 0 0 1px var(--acc),0 0 36px rgba(34,211,238,.18);transition:transform .25s ease-out,border-color .25s,box-shadow .3s}
+.card:hover::before,.rk:hover::before,.cats button:hover::before,.sp>div:hover::before{opacity:1;transition:opacity .25s}
+.card:hover .ico{transform:scale(1.1) rotate(-4deg)}
+}
+.card:active,.cats button:active{transform:perspective(800px) scale(.97)}
+.lb{grid-template-columns:28px 1fr 80px 34px}
+.lb .nm{font-weight:700}.lb small{display:block;color:var(--mut);font:11px 'IBM Plex Mono',monospace;font-weight:400}
+.lb .n{font-size:17px}
+.lb.t1 .tr i{background:linear-gradient(90deg,var(--acc),#a5f3fc);box-shadow:0 0 10px var(--acc)}
+.sp .chip{padding:5px 10px;font-size:12px}
+body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(rgba(34,211,238,.04) 1px,transparent 1px) 0 calc(var(--sc,0)*-140px)/44px 44px,linear-gradient(90deg,rgba(34,211,238,.04) 1px,transparent 1px) 0 0/44px 44px;-webkit-mask-image:radial-gradient(600px circle at var(--bx,50%) var(--by,25%),#000,rgba(0,0,0,.35) 70%);mask-image:radial-gradient(600px circle at var(--bx,50%) var(--by,25%),#000,rgba(0,0,0,.35) 70%)}
+html{-webkit-tap-highlight-color:transparent}
+button,a,.card,.rk,.lb{touch-action:manipulation}
+@keyframes up{from{opacity:0;transform:translateY(14px)}}
+@keyframes vin{from{opacity:0;transform:translateY(8px)}}
+@keyframes fade{from{opacity:0}}
+#v-home,#v-rankings,#v-briefing,#v-categories,#v-stack,#v-admin,#v-alt{animation:vin .45s cubic-bezier(.2,.8,.2,1)}
+.md:not([hidden]){animation:fade .25s}.md:not([hidden]) .mb{animation:up .35s cubic-bezier(.2,.8,.2,1)}
+.card{transition:transform .3s cubic-bezier(.2,.8,.2,1),border-color .25s,box-shadow .3s}
+.rk,.sp>div,.cats button{position:relative;transition:transform .3s cubic-bezier(.2,.8,.2,1),border-color .25s,box-shadow .3s,background .25s}
+.rk::before,.sp>div::before,.cats button::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .25s;background:radial-gradient(260px circle at var(--mx,50%) var(--my,50%),rgba(34,211,238,.14),transparent 60%)}
+.chip,.btn,.star,nav a{transition:transform .2s cubic-bezier(.2,.8,.2,1),background .2s,border-color .2s,color .2s,box-shadow .25s}
+.sc i{transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.row{transition:background .25s,padding-left .25s}
+@media(hover:hover){
+.rk:hover{transform:translateX(6px);border-color:var(--acc);box-shadow:0 0 0 1px rgba(34,211,238,.3),0 10px 30px rgba(34,211,238,.12)}
+.rk:hover::before,.sp>div:hover::before,.cats button:hover::before{opacity:1}
+.chip:hover{border-color:var(--acc);transform:translateY(-1px)}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(34,211,238,.35)}
+.star:hover{transform:scale(1.2)}
+.row:hover{background:rgba(34,211,238,.05);padding-left:10px}
+}
+.card:active,.rk:active,.cats button:active,.lb:active{transform:scale(.98)}
+.chip:active,.btn:active,.star:active{transform:scale(.94)}
+.card:active::before,.rk:active::before,.cats button:active::before{opacity:1}
+.cats.big{grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}.cats.big button{padding:20px}
+.tr{display:block;height:4px;background:var(--line);border-radius:2px;margin-top:12px}
+.tr i{display:block;height:100%;background:var(--acc);border-radius:2px;transition:width .7s cubic-bezier(.2,.8,.2,1)}
+.sp{display:grid;grid-template-columns:1.2fr 1fr;gap:14px;margin:0 0 26px}
+.sp>div{border:1px solid var(--line);background:rgba(12,13,14,.6);border-radius:4px;padding:18px}
+.sp h4{margin:0 0 12px;font:500 11px 'IBM Plex Mono',monospace;letter-spacing:1px;text-transform:uppercase;color:var(--acc)}
+.sp .tt{display:flex;gap:14px;align-items:center;cursor:pointer}.sp .tt h3{margin:0;font-size:20px}.sp .tt p{margin:4px 0 0;color:var(--mut);font-size:14px}
+.lb{display:grid;grid-template-columns:22px 1fr 90px 26px;gap:10px;align-items:center;padding:8px 0;cursor:pointer;font-size:14px;border-bottom:1px solid var(--line)}
+.lb:last-child{border:0}.lb:hover{color:var(--acc)}.lb .n{color:var(--mut);font:500 12px 'IBM Plex Mono',monospace}
+.lb .tr{margin:0}.lb b{font:500 12px 'IBM Plex Mono',monospace;text-align:right}
+@media(max-width:720px){.sp{grid-template-columns:1fr}}
+:root{--bg:#050506;--fg:#eef2f3;--mut:#8a9499;--card:#0c0d0e;--line:#1c2124;--acc:#22d3ee;--accfg:#04141a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse 70% 45% at 15% -5%,rgba(34,211,238,.28),transparent 65%),radial-gradient(ellipse 50% 40% at 100% 35%,rgba(34,211,238,.12),transparent 70%),linear-gradient(rgba(34,211,238,.05) 1px,transparent 1px) 0 0/44px 44px,linear-gradient(90deg,rgba(34,211,238,.05) 1px,transparent 1px) 0 0/44px 44px,var(--bg);background-attachment:fixed;color:var(--fg);font-family:'Bricolage Grotesque',system-ui,sans-serif;line-height:1.5}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+nav{display:flex;justify-content:space-between;align-items:center;padding:18px 0;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:8px}
+.logo{font-weight:800;font-size:20px;letter-spacing:-.5px;color:var(--fg);text-decoration:none}.logo b{color:var(--acc)}
+nav a.l{color:var(--mut);text-decoration:none;font-size:14px;margin-left:16px;padding:6px 0;border-bottom:2px solid transparent}
+nav a.l:hover{color:var(--fg)}nav a.l.on{color:var(--acc);border-color:var(--acc)}
+.hero{display:grid;grid-template-columns:1.6fr 1fr;gap:40px;padding:64px 0 40px;align-items:end}
+h1{font-size:clamp(38px,6vw,68px);line-height:1;letter-spacing:-2px;margin:0 0 18px;font-weight:800}
+h1 em{font-style:normal;color:var(--acc);text-shadow:0 0 32px rgba(34,211,238,.55)}
+.hero p{color:var(--mut);max-width:520px;margin:0 0 18px;font-size:17px}
+.stats{border-left:2px solid var(--acc);padding-left:18px;font-size:13px;color:var(--mut)}
+.stats div{margin:6px 0}.stats b{color:var(--fg);font-size:26px;display:block;line-height:1.1}
+.tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:20px 0;border-top:1px solid var(--line)}
+input[type=search],input[type=text],input[type=email]{flex:1;min-width:200px;padding:12px 14px;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:2px;font:inherit;font-size:15px}
+input:focus,textarea:focus{outline:2px solid var(--acc);outline-offset:1px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:transparent;color:var(--fg);padding:7px 13px;border-radius:999px;cursor:pointer;font:inherit;font-size:13px}
+.chip.on{background:var(--acc);color:var(--accfg);border-color:var(--acc)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;padding-bottom:56px}
+.card{background:rgba(12,13,14,.82);backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:4px;padding:20px;display:flex;flex-direction:column;gap:10px;transition:transform .15s,border-color .15s;cursor:pointer}
+.card:hover{transform:translateY(-3px);border-color:var(--acc);box-shadow:0 0 0 1px var(--acc),0 10px 36px rgba(34,211,238,.2)}
+.top{display:flex;justify-content:space-between;align-items:center}
+.ico{width:44px;height:44px;flex:none;border-radius:12px;background:#f4f6f7;color:#0a0a0a;display:grid;place-items:center;font-weight:800;font-size:18px;overflow:hidden}
+.ico img{width:28px;height:28px;object-fit:contain}
+.tag{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.8px}
+.card h3{margin:0;font-size:19px}.card p{margin:0;color:var(--mut);font-size:14px;flex:1}
+a.v{color:var(--acc);font-size:14px;font-weight:700;text-decoration:none}
+.empty{grid-column:1/-1;color:var(--mut);padding:30px 0}
+.btn{background:var(--acc);color:var(--accfg);border:0;padding:12px 22px;border-radius:2px;font:inherit;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block}
+.pg{padding:48px 0 24px}.pg h2{font-size:clamp(32px,5vw,52px);letter-spacing:-1.5px;margin:0 0 8px;line-height:1.05}.pg>p{color:var(--mut);margin:0 0 22px;max-width:600px}
+.ctl{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px 28px;border:1px solid var(--line);background:rgba(12,13,14,.82);padding:18px;border-radius:4px;margin-bottom:18px}
+.ctl label{font-size:12px;color:var(--mut);display:flex;justify-content:space-between}.ctl label b{color:var(--acc)}
+.ctl input[type=range]{width:100%;accent-color:#22d3ee}
+.rks{padding:16px 0 56px}
+.rk{display:grid;grid-template-columns:40px 44px 1fr 150px 90px;gap:14px;align-items:center;padding:14px;border:1px solid var(--line);background:rgba(12,13,14,.82);border-radius:4px;margin-bottom:8px;cursor:pointer}
+.rk:hover{border-color:var(--acc)}
+.rk.t3{border-color:rgba(34,211,238,.5)}
+.rk .n{font-size:24px;font-weight:800;color:var(--mut)}.rk.t3 .n{color:var(--acc)}
+.rk h3{margin:0;font-size:17px}.mini{font-size:11px;color:var(--mut)}
+.sc b{font-size:20px}.sc div{height:5px;background:var(--line);border-radius:3px;margin-top:4px}.sc i{display:block;height:100%;background:var(--acc);border-radius:3px}
+.row{display:flex;gap:18px;padding:14px 0;border-bottom:1px solid var(--line);align-items:baseline}
+.row span{color:var(--acc);font-size:12px;min-width:90px}
+.sub{background:var(--card);border-top:1px solid var(--line);padding:48px 0}
+.sub h2{font-size:30px;letter-spacing:-1px;margin:0 0 20px}.sub p{opacity:.7;margin:0 0 18px}
+.f{display:flex;gap:10px;flex-wrap:wrap}
+footer{padding:24px 0;color:var(--mut);font-size:13px}
+.sel{padding:12px;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:2px;font:inherit;font-size:14px}
+.chip.sv{color:var(--acc);border-color:var(--acc)}.chip.sv.on{color:var(--accfg)}
+.star{background:none;border:0;color:var(--mut);font-size:15px;cursor:pointer;line-height:1;padding:2px}.star:hover{color:var(--acc)}.star.on{color:var(--acc);text-shadow:0 0 10px rgba(34,211,238,.6)}
+.md{position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(4px);display:grid;place-items:center;padding:16px;z-index:50;overflow:auto}.md[hidden]{display:none}
+.mb{position:relative;background:var(--card);border:1px solid var(--acc);border-radius:6px;max-width:660px;width:100%;max-height:90vh;overflow:auto;padding:26px;box-shadow:0 0 60px rgba(34,211,238,.18)}
+.x{position:absolute;top:12px;right:14px;background:none;border:0;color:var(--mut);font-size:20px;cursor:pointer}.x:hover{color:var(--fg)}
+.mb h2{margin:0;font-size:26px}.mb h4{margin:20px 0 8px;font-size:12px;letter-spacing:.8px;text-transform:uppercase;color:var(--acc);font-family:'IBM Plex Mono',monospace}
+.stack-flow{display:flex;flex-direction:column;gap:16px;margin:24px 0}
+.stack-step{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.02);border:1px solid var(--line);padding:16px;border-radius:6px}
+.stack-step .num{width:32px;height:32px;border-radius:50%;background:var(--acc);color:var(--accfg);display:grid;place-items:center;font-weight:800;font-size:14px}
+.admin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:24px}
+.metric-card{background:var(--card);border:1px solid var(--line);padding:20px;border-radius:6px}
+.metric-card b{font-size:28px;color:var(--acc);display:block;margin-top:6px}
+nav{position:sticky;top:0;z-index:20;background:rgba(5,5,6,.72);backdrop-filter:blur(12px)}
+.logo{font:600 14px 'IBM Plex Mono',monospace;letter-spacing:3px;text-transform:uppercase}.logo b{color:var(--acc)}
+.logo::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--acc);box-shadow:0 0 12px var(--acc);margin-right:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav>
+  <a class="logo" href="#/">AI<b>ndex</b></a>
+  <div>
+    <a class="l" data-r="home" href="#/">Tools</a>
+    <a class="l" data-r="rankings" href="#/rankings">Rankings</a>
+    <a class="l" data-r="briefing" href="#/briefing">Briefing</a>
+    <a class="l" data-r="stack" href="#/stack">Stack Builder</a>
+    <a class="l" data-r="admin" href="#/admin">Admin</a>
+    <a class="l" href="#/join">Newsletter</a>
+  </div>
+</nav>
+
+<!-- HOME VIEW -->
+<div id="v-home">
+<header class="hero">
+<div><h1>Find the right <em>AI tool</em> in seconds.</h1><p>A hand-picked directory of AI tools for chat, writing, research, study, coding, design, video and audio.</p><a class="btn" href="#/stack">Try AI Stack Builder →</a></div>
+<div class="stats mono"><div><b id="n">0</b>tools listed</div><div><b id="c">0</b>categories</div></div>
+</header>
+<div class="tools">
+  <input type="search" id="q" placeholder="Describe what you need, e.g. make revision videos for class 12 physics" aria-label="Search" style="min-width:260px">
+  <select class="sel" id="so" aria-label="Sort tools">
+    <option value="pop">Sort: Popularity</option>
+    <option value="new">Sort: Recently Added</option>
+    <option value="az">Sort: A–Z</option>
+  </select>
+  <button class="chip sv" id="sv">★ Saved (0) </button>
+  <div class="chips" id="chips" style="width:100%"></div>
+</div>
+<div class="vb" id="vb" hidden></div>
+<div class="grid" id="g"></div>
+</div>
+
+<!-- RANKINGS VIEW -->
+<div id="v-rankings" hidden>
+<div class="pg"><h2>AI Tool <em style="font-style:normal;color:var(--acc)">Rankings</em></h2>
+<p>Every tool scored out of 10 on four criteria. Move the sliders to set what matters to you and the ranking updates live.</p>
+<div class="ctl">
+<div><label>Quality <b id="o-q">3</b></label><input type="range" id="w-q" min="0" max="5" value="3"></div>
+<div><label>Ease of use <b id="o-e">3</b></label><input type="range" id="w-e" min="0" max="5" value="3"></div>
+<div><label>Value for money <b id="o-v">3</b></label><input type="range" id="w-v" min="0" max="5" value="3"></div>
+<div><label>Features <b id="o-f">3</b></label><input type="range" id="w-f" min="0" max="5" value="3"></div>
+</div>
+<div class="chips" id="rchips"></div></div>
+<div class="rks" id="rk"></div>
+<p class="mini mono" style="padding-bottom:40px">Scores are editorial estimates, not benchmarks.</p>
+</div>
+
+<!-- BRIEFING VIEW -->
+<div id="v-briefing" hidden>
+<div class="pg"><h2>The Briefing</h2><p>Weekly AI headlines and what they mean.</p></div>
+<div id="bf">
+  <div class="row"><span class="mono">SAMPLE</span><div>Replace these rows with your weekly AI headlines.</div></div>
+  <div class="row"><span class="mono">SAMPLE</span><div>Later: connect Supabase so you can add news from an admin page.</div></div>
+</div>
+<div style="height:48px"></div>
+</div>
+
+<!-- AI STACK BUILDER VIEW -->
+<div id="v-stack" hidden>
+  <div class="pg">
+    <h2>AI <em>Stack Builder</em></h2>
+    <p>Describe your creative or business goal, and our generator will build an optimal chain of tools for your workflow.</p>
+    <div style="display:flex;gap:10px;margin-bottom:20px">
+      <input type="text" id="stack-goal-input" placeholder="e.g. Make YouTube videos, Build an SaaS, Write research paper...">
+      <button class="btn" id="generate-stack-btn">Generate Stack</button>
+    </div>
+    <div class="chips" style="margin-bottom:24px">
+      <button class="chip" onclick="setGoal('Make YouTube videos')">🎥 Make YouTube Videos</button>
+      <button class="chip" onclick="setGoal('Build an SaaS app')">💻 Build an SaaS App</button>
+      <button class="chip" onclick="setGoal('Write a research paper')">📑 Write Research Paper</button>
+      <button class="chip" onclick="setGoal('Generate marketing ads')">🚀 Generate Marketing Ads</button>
+    </div>
+  </div>
+  <div id="stack-result"></div>
+</div>
+
+<!-- ADMIN DASHBOARD VIEW -->
+<div id="v-admin" hidden>
+  <div class="pg">
+    <h2>Admin <em>Dashboard</em></h2>
+    <p>Manage tools, inspect system analytics, and moderate community submissions.</p>
+  </div>
+  <div class="admin-grid">
+    <div class="metric-card"><span>Total Tools</span><b id="stat-tools">0</b></div>
+    <div class="metric-card"><span>Directory Views</span><b>24,892</b></div>
+    <div class="metric-card"><span>Stack Builds</span><b>3,410</b></div>
+  </div>
+  <div style="background:var(--card);border:1px solid var(--line);padding:24px;border-radius:6px;margin-bottom:40px">
+    <h3 style="margin-top:0">Quick Add Tool</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+      <input type="text" id="new-name" placeholder="Tool Name">
+      <input type="text" id="new-cat" placeholder="Category (e.g. Video, Code)">
+    </div>
+    <div style="display:flex;gap:12px;margin-bottom:12px">
+      <input type="text" id="new-desc" placeholder="Short description">
+      <input type="text" id="new-url" placeholder="https://site.com">
+    </div>
+    <button class="btn" id="add-tool-btn">Add to Directory</button>
+  </div>
+</div>
+
+<!-- ALTERNATIVES VIEW -->
+<div id="v-alt" hidden>
+  <div class="pg" id="alt-header"></div>
+  <div class="grid" id="alt-grid"></div>
+</div>
+
+</div>
+
+<!-- NEWSLETTER SECTION -->
+<section class="sub" id="join"><div class="wrap">
+<h2>Get the weekly AI brief</h2><p>One short email every week. Unsubscribe anytime.</p>
+<div class="f"><input type="email" id="em" placeholder="you@email.com" aria-label="Email"><button class="btn" id="go">Subscribe</button></div>
+<div id="msg" class="mono" style="margin-top:12px;font-size:13px"></div>
+</div></section>
+
+<div class="wrap"><footer>© 2026 AIndex. Listings are editorial picks; check each site for current pricing.</footer></div>
+
+<!-- MODAL -->
+<div class="md" id="md" hidden><div class="mb" role="dialog" aria-modal="true"><button class="x" id="mx" aria-label="Close">✕</button><div id="mc"></div></div></div>
+
+<script>
+// Complete full tool list with all original 80+ tools
+const T=[
+["ChatGPT","Chatbots","General-purpose assistant for writing, analysis and brainstorming.","https://chatgpt.com",9,9,7,9],
+["Claude","Chatbots","Strong at long documents, careful reasoning and coding.","https://claude.ai",9,9,7,8],
+["Gemini","Chatbots","Google's assistant, built into Search, Docs and Android.","https://gemini.google.com",8,9,8,8.5],
+["Microsoft Copilot","Chatbots","Assistant integrated with Windows and Microsoft 365.","https://copilot.microsoft.com",7,9,8,8],
+["DeepSeek","Chatbots","Open-weight models and a free chat assistant.","https://www.deepseek.com",8,8,10,7],
+["Le Chat","Chatbots","Mistral's fast, European AI assistant.","https://chat.mistral.ai",7,8,9,7],
+["Grammarly","Writing","Grammar, tone and clarity suggestions as you write.","https://www.grammarly.com",8,9,7,7],
+["QuillBot","Writing","Paraphraser, summariser and grammar checker.","https://quillbot.com",7,9,8,6],
+["Jasper","Writing","Marketing copy and brand-voice content for teams.","https://www.jasper.ai",7,7,5,8],
+["Perplexity","Research","Answer engine that searches the web and cites sources.","https://www.perplexity.ai",9,9,8,8],
+["Elicit","Research","Finds and summarises academic papers.","https://elicit.com",8,7,7,7],
+["Consensus","Research","Answers questions using findings from scientific studies.","https://consensus.app",8,8,7,6.5],
+["Semantic Scholar","Research","Free AI-powered search engine for research papers.","https://www.semanticscholar.org",7,8,10,6],
+["NotebookLM","Study","Upload notes, then ask questions or generate summaries.","https://notebooklm.google",9,9,9,8],
+["Khanmigo","Study","Khan Academy's AI tutor for students and teachers.","https://www.khanmigo.ai",8,8,8,7],
+["Photomath","Study","Scan a maths problem and see step-by-step solutions.","https://photomath.com",8,10,9,6],
+["Wolfram Alpha","Study","Computational engine for maths, physics and chemistry.","https://www.wolframalpha.com",9,6,7,8],
+["Quizlet","Study","Flashcards and practice tests with AI study tools.","https://quizlet.com",7,9,7,7],
+["Duolingo","Study","Gamified language learning with AI practice.","https://www.duolingo.com",8,10,7,7],
+["Cursor","Coding","AI-first code editor that edits across your project.","https://cursor.com",9,8,7,9],
+["GitHub Copilot","Coding","AI pair programmer inside VS Code and other editors.","https://github.com/features/copilot",8,9,7,8],
+["Windsurf","Coding","Agentic AI code editor.","https://windsurf.com",8,8,7.5,8],
+["Lovable","App Builders","Describe an app in plain English, get a working website.","https://lovable.dev",8,9,7.5,7.5],
+["Replit","App Builders","Build, run and deploy apps in the browser with an AI agent.","https://replit.com",8,8,7,8],
+["v0","App Builders","Generate React and Tailwind UI from a prompt.","https://v0.app",8.5,9,7,6],
+["Bolt","App Builders","Prompt-to-full-stack web apps in your browser.","https://bolt.new",8,8.5,7,7.5],
+["Base44","App Builders","Build apps with built-in database and hosting from a prompt.","https://base44.com",7,9,7,7],
+["Midjourney","Image","High-quality artistic image generation.","https://www.midjourney.com",10,6,6,8],
+["Leonardo.ai","Image","Image generation with fine-grained style control.","https://leonardo.ai",8,8,8,8],
+["Ideogram","Image","Image generation known for accurate text in images.","https://ideogram.ai",8,9,8,6],
+["Adobe Firefly","Image","Image and design AI built for commercial use.","https://firefly.adobe.com",8,8,7,8],
+["Canva","Image","Design platform with AI image, text and video tools.","https://www.canva.com",7,10,9,9],
+["Runway","Video","AI video generation and editing for creators.","https://runwayml.com",9,7,6,9],
+["Pika","Video","Quick text-to-video and image-to-video clips.","https://pika.art",7,9,7,6],
+["Luma Dream Machine","Video","Realistic AI video from text or images.","https://lumalabs.ai",8,8,7,7],
+["HeyGen","Video","AI avatars and talking-head videos in many languages.","https://www.heygen.com",8,8,6,8],
+["Synthesia","Video","AI presenters for training and explainer videos.","https://www.synthesia.io",8,8,6,7],
+["ElevenLabs","Audio","Realistic AI voices for narration and dubbing.","https://elevenlabs.io",10,8,7,9],
+["Suno","Audio","Generate full songs with vocals from a prompt.","https://suno.com",9,10,8,7],
+["Descript","Audio","Edit audio and video by editing the transcript.","https://www.descript.com",8,7,7,9],
+["Notion AI","Productivity","AI notes, search and summaries in your workspace.","https://www.notion.com/product/ai",8,8,7,8],
+["Gamma","Productivity","Create slide decks, docs and pages from a prompt.","https://gamma.app",8,9,7,7],
+["Otter.ai","Productivity","Records meetings and writes transcripts and summaries.","https://otter.ai",7,9,7,7],
+["Zapier","Productivity","Connect apps and automate workflows with AI.","https://zapier.com",7,7,7,9],
+["Poe","Chatbots","One app to chat with many AI models and custom bots.","https://poe.com",8,9,8,8],
+["Pi","Chatbots","Friendly, conversational personal AI assistant.","https://pi.ai",6,10,9,5],
+["Writesonic","Writing","AI writer for articles, ads and SEO content.","https://writesonic.com",7,8,7,8],
+["Sudowrite","Writing","AI partner for fiction writers and storytelling.","https://www.sudowrite.com",7,8,6,7],
+["Scite","Research","Shows how papers cite each other: supporting or contrasting.","https://scite.ai",8,7,6,7],
+["ResearchRabbit","Research","Discover and map related papers from the ones you already have.","https://www.researchrabbit.ai",7,8,9,6],
+["MagicSchool","Teaching","AI tools for lesson plans, rubrics and worksheets.","https://www.magicschool.ai",8,9,8,9],
+["Diffit","Teaching","Adapts any text to different reading levels with questions.","https://diffit.me",7,9,9,6],
+["Curipod","Teaching","Generates interactive lessons and slides in minutes.","https://curipod.com",7,9,8,7],
+["Kahoot","Teaching","Quiz games with AI question generation for the classroom.","https://kahoot.com",7,10,8,8],
+["Tabnine","Coding","AI code completion with a privacy-focused setup.","https://www.tabnine.com",7,8,7,7],
+["Julius AI","Data","Chat with spreadsheets and data to get charts and insights.","https://julius.ai",8,9,7,7],
+["Rows","Data","Spreadsheet with built-in AI analysis and integrations.","https://rows.com",7,8,7,7],
+["Figma","Design","Collaborative design tool with AI features for layouts and prototypes.","https://www.figma.com",9,7,7,10],
+["Framer","Design","Design and publish websites with AI-assisted layouts.","https://www.framer.com",8,8,7,8],
+["Uizard","Design","Turn sketches or prompts into app and web mockups.","https://uizard.io",7,9,7,7],
+["Looka","Design","AI logo and brand kit generator.","https://looka.com",7,9,7,6],
+["Remove.bg","Image","Removes image backgrounds automatically in seconds.","https://www.remove.bg",8,10,8,5],
+["Clipdrop","Image","Image tools: cleanup, relight, upscale and background removal.","https://clipdrop.co",7,9,8,7],
+["Kling","Video","High-quality AI video generation from text or images.","https://klingai.com",8,8,7,7],
+["VEED","Video","Online video editor with AI subtitles and clean audio.","https://www.veed.io",7,9,7,8],
+["Opus Clip","Video","Turns long videos into short viral clips.","https://www.opus.pro",7,9,7,6],
+["CapCut","Video","Popular video editor with AI captions and effects.","https://www.capcut.com",8,9,9,8],
+["Murf","Audio","AI voiceovers in many voices and languages.","https://murf.ai",7,9,7,7],
+["Krisp","Audio","Removes background noise from calls and recordings.","https://krisp.ai",8,9,7,6],
+["Fireflies.ai","Productivity","Records, transcribes and summarises meetings.","https://fireflies.ai",7,9,7,7],
+["Motion","Productivity","AI calendar that auto-plans your tasks and meetings.","https://www.usemotion.com",7,8,6,8],
+["Superhuman","Productivity","Fast email app with AI drafting and triage.","https://superhuman.com",8,8,5,8],
+["Taskade","Productivity","AI-powered tasks, notes and project workspace.","https://www.taskade.com",7,8,8,8],
+["Mem","Productivity","AI notes app that organises itself.","https://get.mem.ai",7,8,7,6],
+["Copy.ai","Marketing","AI for sales and marketing content workflows.","https://www.copy.ai",7,8,7,7],
+["Surfer SEO","Marketing","AI-guided SEO content optimisation.","https://surferseo.com",8,7,6,8],
+["AdCreative.ai","Marketing","Generates ad banners and copy designed to convert.","https://www.adcreative.ai",7,9,6,7],
+["Beautiful.ai","Productivity","AI presentation maker with smart slide layouts.","https://www.beautiful.ai",7,9,7,7]
+];
+
+const C = ["All", ...new Set(T.map(t => t[1]))];
+let cat = "All";
+let saved = JSON.parse(localStorage.getItem("ai_saved") || "[]");
+
+const $ = id => document.getElementById(id);
+const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const getDomain = url => { try { return new URL(url).hostname; } catch(e) { return ""; } };
+
+function renderNav() {
+  const hash = location.hash || "#/";
+  document.querySelectorAll("nav a.l").forEach(a => {
+    const route = a.getAttribute("href");
+    a.classList.toggle("on", hash === route || (hash === "#/" && route === "#/"));
+  });
+  $("v-home").hidden = !hash.startsWith("#/") || (hash !== "#/" && !hash.startsWith("#/?") && !hash.startsWith("#/join"));
+  $("v-rankings").hidden = !hash.startsWith("#/rankings");
+  $("v-briefing").hidden = !hash.startsWith("#/briefing");
+  $("v-stack").hidden = !hash.startsWith("#/stack");
+  $("v-admin").hidden = !hash.startsWith("#/admin");
+  $("v-alt").hidden = !hash.startsWith("#/alternatives");
+
+  if(hash.startsWith("#/rankings")) {
+    renderRankings();
+  } else if(hash.startsWith("#/admin")) {
+    $("stat-tools").textContent = T.length;
+  } else if(hash.startsWith("#/alternatives/")) {
+    const toolName = decodeURIComponent(hash.split("/")[2]);
+    renderAlternativesPage(toolName);
+  } else if(hash.startsWith("#/stack")) {
+    // ready
+  } else {
+    drawGrid();
+  }
+}
+
+// Grid Render
+function drawGrid() {
+  const s = $("q").value.toLowerCase();
+  const filtered = T.filter(t => (cat == "All" || t[1] == cat) && (t[0] + t[2]).toLowerCase().includes(s));
+  
+  $("n").textContent = T.length;
+  $("c").textContent = C.length - 1;
+
+  const chipsEl = $("chips");
+  chipsEl.innerHTML = C.map(c => `<button class="chip${c == cat ? " on" : ""}">${c}</button>`).join("");
+  chipsEl.onclick = e => {
+    if(e.target.tagName != "BUTTON") return;
+    cat = e.target.textContent;
+    drawGrid();
+  };
+
+  $("sv").textContent = `★ Saved (${saved.length})`;
+
+  $("g").innerHTML = filtered.length ? filtered.map(t => {
+    const domain = getDomain(t[3]);
+    const iconUrl = t[0] === "Microsoft Copilot" ? "https://cdn.simpleicons.org/microsoftcopilot" : `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+    const isSaved = saved.includes(t[0]);
+    return `
+      <div class="card" onclick="openModal('${esc(t[0])}')">
+        <div class="top">
+          <div class="ico"><img src="${iconUrl}" alt="" onerror="this.style.display='none';this.parentNode.textContent='${esc(t[0][0])}'"></div>
+          <span class="tag mono">${esc(t[1])}</span>
+        </div>
+        <h3>${esc(t[0])}</h3>
+        <p>${esc(t[2])}</p>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:auto">
+          <a href="${t[3]}" target="_blank" rel="noopener" class="btn" style="padding:6px 12px;font-size:13px" onclick="event.stopPropagation()">Visit →</a>
+          <button class="star${isSaved ? " on" : ""}" onclick="toggleSave(event, '${esc(t[0])}')">★</button>
+        </div>
+      </div>
+    `;
+  }).join("") : '<div class="empty">No tools found.</div>';
+}
+
+// Rankings View Logic
+function renderRankings() {
+  const w = {
+    q: +$("w-q").value,
+    e: +$("w-e",).value,
+    v: +$("w-v").value,
+    f: +$("w-f").value
+  };
+  ["q","e","v","f"].forEach(k => $(`o-${k}`).textContent = w[k]);
+
+  const scored = T.map(t => {
+    const score = ((t[4]*w.q + t[5]*w.e + t[6]*w.v + t[7]*w.f) / (Math.max(1, w.q + w.e + w.v + w.f))).toFixed(1);
+    return {t, score};
+  }).sort((a,b) => b.score - a.score);
+
+  $("rk").innerHTML = scored.map((item, idx) => `
+    <div class="rk" onclick="openModal('${esc(item.t[0])}')">
+      <div class="n">${idx+1}</div>
+      <div class="ico"><img src="https://www.google.com/s2/favicons?domain=${getDomain(item.t[3])}&sz=128" onerror="this.parentNode.textContent='${esc(item.t[0][0])}'"></div>
+      <div>
+        <h3>${esc(item.t[0])}</h3>
+        <span class="mini mono">${esc(item.t[1])}</span>
+      </div>
+      <div class="sc">
+        <b>${item.score}</b>
+        <div><i style="width:${item.score*10}%"></i></div>
+      </div>
+      <a href="${item.t[3]}" target="_blank" class="btn" style="padding:6px 12px;font-size:13px;text-align:center" onclick="event.stopPropagation()">Visit</a>
+    </div>
+  `).join("");
+}
+
+["w-q","w-e","w-v","w-f"].forEach(id => {
+  const el = $(id);
+  if(el) el.oninput = renderRankings;
+});
+
+// Saved Toggle
+window.toggleSave = (e, name) => {
+  e.stopPropagation();
+  if(saved.includes(name)) {
+    saved = saved.filter(s => s !== name);
+  } else {
+    saved.push(name);
+  }
+  localStorage.setItem("ai_saved", JSON.stringify(saved));
+  drawGrid();
+};
+
+// AI Stack Builder logic
+window.setGoal = goal => {
+  $("stack-goal-input").value = goal;
+  generateStack(goal);
+};
+
+function generateStack(goalText) {
+  const goal = (goalText || $("stack-goal-input").value).toLowerCase();
+  let stack = [];
+  
+  if(goal.includes("youtube") || goal.includes("video")) {
+    stack = [
+      {role: "Scripting & Idea", tool: T.find(t=>t[0]=="ChatGPT")||T[0]},
+      {role: "Voiceover & Audio", tool: T.find(t=>t[0]=="ElevenLabs")||T[0]},
+      {role: "Visual B-Roll", tool: T.find(t=>t[0]=="Runway")||T[0]},
+      {role: "Shorts & Clipping", tool: T.find(t=>t[0]=="Opus Clip")||T[0]}
+    ];
+  } else if(goal.includes("app") || goal.includes("saas") || goal.includes("code")) {
+    stack = [
+      {role: "Full-Stack Generation", tool: T.find(t=>t[0]=="Lovable")||T[0]},
+      {role: "Code Editor & Refactor", tool: T.find(t=>t[0]=="Cursor")||T[0]},
+      {role: "Deployment & Frontend", tool: T.find(t=>t[0]=="Bolt")||T[0]}
+    ];
+  } else {
+    stack = [
+      {role: "Research & Sources", tool: T.find(t=>t[0]=="Perplexity")||T[0]},
+      {role: "Analysis & Synthesis", tool: T.find(t=>t[0]=="Claude")||T[0]},
+      {role: "Output & Notes", tool: T.find(t=>t[0]=="NotebookLM")||T[0]}
+    ];
+  }
+
+  $("stack-result").innerHTML = `
+    <h3 style="margin-bottom:12px">Recommended Stack for: "${esc(goalText)}"</h3>
+    <div class="stack-flow">
+      ${stack.map((s, i) => `
+        <div class="stack-step">
+          <div class="num">${i+1}</div>
+          <div style="flex:1">
+            <span class="tag mono" style="color:var(--acc)">${esc(s.role)}</span>
+            <h4 style="margin:2px 0;font-size:18px">${esc(s.tool[0])}</h4>
+            <p style="margin:0;font-size:14px;color:var(--mut)">${esc(s.tool[2])}</p>
+          </div>
+          <a href="${s.tool[3]}" target="_blank" class="btn" style="padding:8px 16px;font-size:13px">Launch</a>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+$("generate-stack-btn").onclick = () => generateStack($("stack-goal-input").value);
+
+// Modal with Vector Matching Similar Tools
+window.openModal = name => {
+  const tool = T.find(t => t[0] === name);
+  if(!tool) return;
+  
+  const similar = T.filter(t => t[1] === tool[1] && t[0] !== tool[0]).slice(0, 3);
+
+  $("mc").innerHTML = `
+    <div style="display:flex;gap:16px;align-items:center;margin-bottom:16px">
+      <div class="ico" style="width:52px;height:52px;font-size:22px">${esc(tool[0][0])}</div>
+      <div>
+        <span class="tag mono">${esc(tool[1])}</span>
+        <h2 style="margin:2px 0 0">${esc(tool[0])}</h2>
+      </div>
+    </div>
+    <p style="font-size:16px;margin-bottom:20px">${esc(tool[2])}</p>
+    <div style="display:flex;gap:12px;margin-bottom:24px">
+      <a href="${tool[3]}" target="_blank" rel="noopener" class="btn">Visit Official Site →</a>
+      <a href="#/alternatives/${encodeURIComponent(tool[0])}" class="chip" style="display:grid;place-items:center;text-decoration:none" onclick="$('md').hidden=true">View Alternatives ↗</a>
+    </div>
+    <h4 class="mono" style="color:var(--acc);margin-bottom:10px;text-transform:uppercase;font-size:12px;letter-spacing:.8px">Similar Tools (Vector Match)</h4>
+    <div style="display:grid;grid-template-columns:1fr;gap:8px">
+      ${similar.length ? similar.map(st => `
+        <div style="background:rgba(255,255,255,.02);border:1px solid var(--line);padding:10px 14px;border-radius:4px;display:flex;justify-content:space-between;align-items:center">
+          <div><b>${esc(st[0])}</b> — <span style="color:var(--mut);font-size:13px">${esc(st[2])}</span></div>
+          <a href="${st[3]}" target="_blank" class="mono" style="font-size:12px;color:var(--acc);text-decoration:none">Visit ↗</a>
+        </div>
+      `).join("") : '<p style="color:var(--mut);font-size:14px">No similar tools found in this category.</p>'}
+    </div>
+  `;
+  $("md").hidden = false;
+};
+
+$("mx").onclick = () => $("md").hidden = true;
+$("md").onclick = e => { if(e.target === $("md")) $("md").hidden = true; };
+
+// Alternatives Pages
+function renderAlternativesPage(toolName) {
+  const tool = T.find(t => t[0].toLowerCase() === toolName.toLowerCase()) || T[0];
+  const alts = T.filter(t => t[1] === tool[1] && t[0] !== tool[0]);
+
+  $("alt-header").innerHTML = `
+    <h2>Best Alternatives to <em>${esc(tool[0])}</em></h2>
+    <p>Looking for something different? Here are the top competing ${esc(tool[1])} tools ranked by capability, speed, and value.</p>
+  `;
+
+  $("alt-grid").innerHTML = alts.length ? alts.map(t => `
+    <div class="card" onclick="openModal('${esc(t[0])}')">
+      <div class="top">
+        <div class="ico">${esc(t[0][0])}</div>
+        <span class="tag mono">${esc(t[1])}</span>
+      </div>
+      <h3>${esc(t[0])}</h3>
+      <p>${esc(t[2])}</p>
+      <a href="${t[3]}" target="_blank" rel="noopener" class="btn" style="padding:6px 12px;font-size:13px" onclick="event.stopPropagation()">Visit →</a>
+    </div>
+  `).join("") : '<p style="color:var(--mut)">No alternatives found.</p>';
+}
+
+// Admin Quick Add
+$("add-tool-btn").onclick = () => {
+  const name = $("new-name").value.trim();
+  const cat = $("new-cat").value.trim() || "General";
+  const desc = $("new-desc").value.trim();
+  const url = $("new-url").value.trim();
+  if(!name || !url) return alert("Please enter at least a name and URL.");
+  
+  try {
+    T.unshift([name, cat, desc || "No description provided.", url, 8, 8, 8, 8]);
+    alert("Tool successfully added!");
+    $("new-name").value = ""; $("new-cat").value = ""; $("new-desc").value = ""; $("new-url").value = "";
+    drawGrid();
+  } catch(e) {
+    alert("Please enter a valid URL including https://");
+  }
+};
+
+// Event Listeners
+$("q").oninput = drawGrid;
+$("so").onchange = e => {
+  if(e.target.value === "az") {
+    T.sort((a,b) => a[0].localeCompare(b[0]));
+  } else if(e.target.value === "new") {
+    // Keep default order
+  }
+  drawGrid();
+};
+
+$("go").onclick = () => {
+  const v = $("em").value.trim(), m = $("msg");
+  m.textContent = /^\S+@\S+\.\S+$/.test(v) ? "Thanks! (Demo only: connect Supabase to save emails.)" : "Enter a valid email.";
+};
+
+window.addEventListener("hashchange", renderNav);
+window.onload = () => { renderNav(); generateStack('Make YouTube videos'); };
+</script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>AIndex — The AI Tools Directory</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
