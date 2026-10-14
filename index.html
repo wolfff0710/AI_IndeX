@@ -186,7 +186,7 @@ addEventListener("hashchange",()=>setTimeout(f,0));setTimeout(f,0);
 </head>
 <body>
 <div class="wrap">
-<nav><a class="logo" href="#/">AI<b>ndex</b></a><div><a class="l" data-r="home" href="#/">Tools</a><a class="l" data-r="rankings" href="#/rankings">Rankings</a><a class="l" data-r="briefing" href="#/briefing">Briefing</a><a class="l" href="#/join">Newsletter</a></div></nav>
+<nav><a class="logo" href="#/">AI<b>ndex</b></a><div><a class="l" data-r="home" href="#/">Tools</a><a class="l" data-r="rankings" href="#/rankings">Rankings</a><a class="l" data-r="briefing" href="#/briefing">Briefing</a></div></nav>
 
 <div id="v-home">
 <header class="hero">
@@ -221,11 +221,7 @@ addEventListener("hashchange",()=>setTimeout(f,0));setTimeout(f,0);
 </div>
 </div>
 
-<section class="sub" id="join"><div class="wrap">
-<h2>Get the weekly AI brief</h2><p>One short email every week. Unsubscribe anytime.</p>
-<div class="f"><input type="email" id="em" placeholder="you@email.com" aria-label="Email"><button class="btn" id="go">Subscribe</button></div>
-<div id="msg" class="mono" style="margin-top:12px;font-size:13px"></div>
-</div></section>
+
 <div class="wrap"><footer>© 2026 AIndex. Listings are editorial picks; check each site for current pricing.</footer></div>
 <div class="md" id="md" hidden><div class="mb" role="dialog" aria-modal="true" aria-labelledby="mt"><button class="x" id="mx" aria-label="Close">✕</button><div id="mc"></div></div></div>
 <script>
@@ -481,13 +477,11 @@ el.innerHTML=d.length?d.map(p=>{const u=/^https?:\/\//.test(p.link||"")?p.link:"
 catch(e){el.innerHTML='<div class="row"><div>Could not load the briefing. Try again later.</div></div>'}}
 loadBrief();
 function route(){const h=location.hash.slice(2)||"home";
-if(h=="join"){$("join").scrollIntoView();return}
 const v=["home","rankings","briefing"].includes(h)?h:"home";
 ["home","rankings","briefing"].forEach(x=>$("v-"+x).hidden=x!=v);
 document.querySelectorAll("nav a[data-r]").forEach(a=>a.classList.toggle("on",a.dataset.r==v));
 window.scrollTo(0,0)}
 addEventListener("hashchange",route);route();
-$("go").onclick=()=>{const v=$("em").value.trim(),m=$("msg");m.textContent=/^\S+@\S+\.\S+$/.test(v)?"Thanks! (Demo only: connect Supabase to save emails.)":"Enter a valid email."};
 (()=>{
 const rm=matchMedia("(prefers-reduced-motion:reduce)").matches;
 const em=document.querySelector("h1 em");
