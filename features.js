@@ -1,9 +1,9 @@
 // AIndex features: Stack Builder, Alternatives, Similar Tools, Admin. Load after extras.js.
 (()=>{
-const SB_URL="",SB_KEY="";// Supabase Project URL + anon key (optional; enables admin, reviews, analytics, DB tools/news)
+const SB_URL="https://pkannraooazbxwrubeqh.supabase.co",SB_KEY="sb_publishable_FrxVq3cGgGir2oaYtUXBsA_QCcelNP1";
 const ok=!!(SB_URL&&SB_KEY),BT=document.title,sl=n=>n.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,""),idx=n=>T.findIndex(t=>t[0]==n);
 let jwt=sessionStorage.getItem("aj")||"",tab="tools",ROWS=[];
-const api=async(p,m="GET",b,pf="return=minimal")=>{const r=await fetch(SB_URL+p,{method:m,headers:{apikey:SB_KEY,Authorization:"Bearer "+(jwt||SB_KEY),"Content-Type":"application/json",Prefer:pf},body:b?JSON.stringify(b):undefined});if(!r.ok)throw new Error((await r.text()).slice(0,200));const x=await r.text();return x?JSON.parse(x):null};
+const api=async(p,m="GET",b,pf="return=minimal")=>{const r=await fetch(SB_URL+p,{method:m,headers:{apikey:SB_KEY,...(jwt?{Authorization:"Bearer "+jwt}:{}),"Content-Type":"application/json",Prefer:pf},body:b?JSON.stringify(b):undefined});if(!r.ok)throw new Error((await r.text()).slice(0,200));const x=await r.text();return x?JSON.parse(x):null};
 const q=(t,s)=>api("/rest/v1/"+t+s),log=(type,tool)=>ok&&api("/rest/v1/events","POST",{type,tool}).catch(()=>{});
 const TS="?select=name,category,description,url,quality,ease,value,features";
 const pg=(h,b)=>`<div class="pg"><h2>${h}</h2>${b}</div>`,em=s=>`<em style="font-style:normal;color:var(--acc)">${s}</em>`;
