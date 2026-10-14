@@ -60,6 +60,7 @@ vS.onclick=e=>{const o=e.target.closest("[data-o]"),g=e.target.dataset.g;if(g){$
 
 /* ---------- Admin dashboard (Supabase Auth + RLS) ---------- */
 const F={tools:["name","category","description","url","quality","ease","value","features"],news:["date","title","summary","link","tag"]},TB=["tools","news","reviews","analytics"];
+const BULK=<h4 class="mono" style="color:var(--acc)">ADD MANY (one per line: title | summary | link | tag)</h4><textarea class="sel" id="bulk" rows="6" style="width:100%"></textarea><button class="btn" id="bk" style="margin:8px 0 16px">Add all</button>;
 async function admin(){
 if(!ok){vD.innerHTML=pg("Admin","<p>Add SB_URL and SB_KEY at the top of features.js and run supabase.sql first.</p>");return}
 if(!jwt){vD.innerHTML=pg("Admin login",`<div class="f"><input class="sel" type="email" id="ae" placeholder="admin email"><input class="sel" type="password" id="ap" placeholder="password"><button class="btn" id="al">Log in</button></div>`);return}
@@ -71,7 +72,7 @@ body=`<p class="mono">${r.length} events · ${r.filter(x=>Date.now()-new Date(x.
 else{ROWS=await q(tab,tab=="tools"?TS+"&order=name&limit=500":tab=="news"?"?select=*&order=date.desc&limit=200":"?select=*&order=created_at.desc&limit=200");
 if(tab=="tools")merge(ROWS);
 const form=F[tab]?`<div class="ctl">${F[tab].map(k=>`<div><label>${k}</label><input class="sel" style="width:100%" id="f-${k}"${k=="date"?` placeholder="YYYY-MM-DD"`:""}></div>`).join("")}</div><button class="btn" id="sv">Save</button><div style="height:16px"></div>`:"";
-body=form+ROWS.map(r=>tab=="tools"?`<div class="row"><span class="mono">${esc(r.category)}</span><div style="flex:1"><b>${esc(r.name)}</b></div><button class="chip" data-ed="${esc(r.name)}">Edit</button><button class="chip" data-del="${esc(r.name)}">Delete</button></div>`
+body=form+(tab=="news"?BULK:"")+ROWS.map(r=>tab=="tools"?`<div class="row"><span class="mono">${esc(r.category)}</span><div style="flex:1"><b>${esc(r.name)}</b></div><button class="chip" data-ed="${esc(r.name)}">Edit</button><button class="chip" data-del="${esc(r.name)}">Delete</button></div>`
 :tab=="news"?`<div class="row"><span class="mono">${esc(r.date)}</span><div style="flex:1"><b>${esc(r.title)}</b></div><button class="chip" data-del="${r.id}">Delete</button></div>`
 :`<div class="row"><span class="mono">${esc(r.status)}</span><div style="flex:1"><b>${esc(r.tool)}</b> ${"★".repeat(r.rating||0)}<p>${esc(r.body||"")}</p></div><button class="chip" data-st="approved" data-id="${r.id}">Approve</button><button class="chip" data-st="rejected" data-id="${r.id}">Reject</button><button class="chip" data-del="${r.id}">Delete</button></div>`).join("")}
 }catch(e){body=`<p>Error: ${esc(e.message)} (are you listed in the admins table?)</p>`}
@@ -82,6 +83,7 @@ if(b.id=="al"){const r=await fetch(SB_URL+"/auth/v1/token?grant_type=password",{
 else if(b.id=="lo"){jwt="";sessionStorage.removeItem("aj")}
 else if(d.t)tab=d.t;
 else if(b.id=="sv"){const o={};F[tab].forEach(k=>{const v=vD.querySelector("#f-"+k).value.trim();if(v!=="")o[k]=/^(quality|ease|value|features)$/.test(k)?+v:v});await api("/rest/v1/"+tab,"POST",o,"resolution=merge-duplicates,return=minimal")}
+else if(b.id=="bk"){const a=$("bulk").value.split("\n").map(l=>l.split("|").map(x=>x.trim())).filter(x=>x[0]).map(([title,summary,link,tag])=>({title,summary:summary||null,link:link||null,tag:tag||null}));if(a.length)await api("/rest/v1/news","POST",a)}
 else if(d.del)await api(`/rest/v1/${tab}?${tab=="tools"?"name":"id"}=eq.${encodeURIComponent(d.del)}`,"DELETE");
 else if(d.st)await api(`/rest/v1/reviews?id=eq.${d.id}`,"PATCH",{status:d.st});
 else if(d.ed){const r=ROWS.find(x=>x.name==d.ed);F.tools.forEach(k=>vD.querySelector("#f-"+k).value=r[k]??"");return}
